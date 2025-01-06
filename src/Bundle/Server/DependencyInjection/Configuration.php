@@ -14,12 +14,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('user_data_factory_service')
-                    ->isRequired()
-                ->end()
-                ->scalarNode('jwt_secret_key')
-                    ->isRequired()
-                ->end()
+                ->scalarNode('user_data_factory_service')->isRequired()->end()
+                ->scalarNode('jwt_secret_key')->isRequired()->end()
+                ->scalarNode('jwt_expiration_seconds')->defaultValue(10)->end()
             ->end()
         ;
 

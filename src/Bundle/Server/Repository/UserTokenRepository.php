@@ -32,4 +32,9 @@ class UserTokenRepository extends ServiceEntityRepository
         $entityManager->persist($token);
         $entityManager->flush();
     }
+
+    public function getValidToken(string $token): ?UserToken
+    {
+        return $this->findOneBy(['token' => $token]);
+    }
 }

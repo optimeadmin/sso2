@@ -6,6 +6,7 @@ services:
     autoconfigure: true
     bind:
       $privateKey: '%optime_sso_server.jwt.secret%'
+      $expirationSeconds: '%optime_sso_server.jwt.expiration%'
 
   Optime\Sso\Bundle\Server\:
     resource: '../'
@@ -14,6 +15,6 @@ services:
       - '../Entity/'
       - '../OptimeSsoServerBundle.php'
 
-#  Optime\Sso\Bundle\Server\Controller\:
-#    resource: '../src/Bundle/Server/Controller/'
-#    tags: [ 'controller.service_arguments' ]
+  Optime\Sso\Bundle\Server\Controller\:
+    resource: '../Controller/'
+    tags: [ 'controller.service_arguments' ]
