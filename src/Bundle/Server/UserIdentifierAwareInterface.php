@@ -1,6 +1,6 @@
 <?php
 
-namespace Optime\Sso\Component\Server;
+namespace Optime\Sso\Bundle\Server;
 
 interface UserIdentifierAwareInterface
 {

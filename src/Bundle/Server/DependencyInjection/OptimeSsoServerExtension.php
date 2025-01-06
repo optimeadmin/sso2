@@ -14,7 +14,7 @@ class OptimeSsoServerExtension extends Extension
 
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__ . '/../../config')
+            new FileLocator(__DIR__.'/../../config')
         );
         $loader->load('services.yaml');
 
@@ -26,6 +26,6 @@ class OptimeSsoServerExtension extends Extension
 //        $this->configureRolesProvider($config, $container);
 //        $this->configureResourcesPrefixes($config, $container);
 
-        $container->addResource(new DirectoryResource(__DIR__ . '/../'));
+        $container->addResource(new DirectoryResource(__DIR__.'/src/'));
     }
 }
