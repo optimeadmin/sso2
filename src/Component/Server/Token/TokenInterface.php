@@ -3,7 +3,7 @@
  * (c) Optime Consulting
  */
 
-namespace Optime\Sso\Component\Server;
+namespace Optime\Sso\Component\Server\Token;
 
 interface TokenInterface
 {
