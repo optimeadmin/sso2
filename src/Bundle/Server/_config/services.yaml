@@ -4,6 +4,8 @@ services:
   _defaults:
     autowire: true
     autoconfigure: true
+    bind:
+      $privateKey: '%optime_sso_server.jwt.secret%'
 
   Optime\Sso\Bundle\Server\:
     resource: '../'

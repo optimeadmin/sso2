@@ -10,7 +10,7 @@ class JwtTokenGenerator
 {
     public function __construct(
         private readonly ServerTokenGenerator $tokenGenerator,
-        private readonly string $privateKey = '123',
+        private readonly string $privateKey,
     ) {
     }
 
