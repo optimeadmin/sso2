@@ -20,7 +20,7 @@ class UserTokenRepository extends ServiceEntityRepository
         $entityManager
             ->createQueryBuilder()
             ->update(UserToken::class, 't')
-            ->set('t.active', false)
+            ->set('t.active', 'false')
             ->where('t.active = true')
             ->andWhere('t.clientCode = :client_code')
             ->andWhere('t.userIdentifier = :user_identifier')

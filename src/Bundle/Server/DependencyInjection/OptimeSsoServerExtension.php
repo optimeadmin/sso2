@@ -2,6 +2,7 @@
 
 namespace Optime\Sso\Bundle\Server\DependencyInjection;
 
+use Optime\Sso\Bundle\Server\Token\User\UserDataFactoryInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,7 +18,7 @@ class OptimeSsoServerExtension extends Extension
 
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/../../config')
+            new FileLocator(__DIR__.'/../_config')
         );
         $loader->load('services.yaml');
 
@@ -29,6 +30,9 @@ class OptimeSsoServerExtension extends Extension
 //        $this->configureRolesProvider($config, $container);
 //        $this->configureResourcesPrefixes($config, $container);
 
-        $container->addResource(new DirectoryResource(__DIR__.'/src/'));
+        $container->addResource(new DirectoryResource(__DIR__.'/../'));
+
+        $container->setAlias(UserDataFactoryInterface::class, $config['user_data_factory_service']);
+//        $container->setAlias($config['user_data_factory_service'], UserDataFactoryInterface::class);
     }
 }

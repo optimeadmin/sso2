@@ -1,11 +1,30 @@
 <?php
 
-namespace Bundle\Server\Token;
+namespace Optime\Sso\Bundle\Server\Token;
+
+use Firebase\JWT\JWT;
+use Optime\Sso\Bundle\Server\Token\ServerTokenGenerator;
+use Optime\Sso\Bundle\Server\UserIdentifierAwareInterface;
 
 class JwtTokenGenerator
 {
-    public function generate(): string
-    {
+    public function __construct(
+        private readonly ServerTokenGenerator $tokenGenerator,
+        private readonly string $privateKey = '123',
+    ) {
+    }
 
+    public function generate(string $clientCode, UserIdentifierAwareInterface $userIdentifierAware): string
+    {
+        $token = $this->tokenGenerator->generate($clientCode, $userIdentifierAware);
+
+        return JWT::encode(
+            [
+                'token' => $token->getToken(),
+                'exp' => time() + 10,
+            ],
+            $this->privateKey,
+            'HS256'
+        );
     }
 }

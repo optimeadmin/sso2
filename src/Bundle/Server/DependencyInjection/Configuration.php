@@ -12,6 +12,11 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder('optime_sso_server');
         $rootNode = $treeBuilder->getRootNode();
 
+        $rootNode->children()
+            ->scalarNode('user_data_factory_service')
+            ->isRequired()
+            ->end();
+
         return $treeBuilder;
     }
 }

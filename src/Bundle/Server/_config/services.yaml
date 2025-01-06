@@ -1,0 +1,17 @@
+parameters:
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Optime\Sso\Bundle\Server\:
+    resource: '../'
+    exclude:
+      - '../DependencyInjection/'
+      - '../Entity/'
+      - '../OptimeSsoServerBundle.php'
+
+#  Optime\Sso\Bundle\Server\Controller\:
+#    resource: '../src/Bundle/Server/Controller/'
+#    tags: [ 'controller.service_arguments' ]
