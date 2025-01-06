@@ -1,0 +1,20 @@
+parameters:
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    bind:
+#      $privateKey: '%optime_sso_server.jwt.secret%'
+#      $expirationSeconds: '%optime_sso_server.jwt.expiration%'
+
+  Optime\Sso\Bundle\Client\:
+    resource: '../'
+    exclude:
+      - '../DependencyInjection/'
+      - '../Entity/'
+      - '../OptimeSsoClientBundle.php'
+
+#  Optime\Sso\Bundle\Client\Controller\:
+#    resource: '../Controller/'
+#    tags: [ 'controller.service_arguments' ]

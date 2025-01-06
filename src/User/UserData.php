@@ -8,6 +8,7 @@ class UserData
         public readonly int|string $id,
         public readonly string $usernameOrEmail,
         public readonly array $extraData = [],
+        public readonly ?array $roles = null,
     ) {
     }
 
@@ -17,6 +18,7 @@ class UserData
             'id' => $this->id,
             'usernameOrEmail' => $this->usernameOrEmail,
             'extraData' => $this->extraData,
+            'roles' => $this->roles,
         ];
     }
 }

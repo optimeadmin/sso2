@@ -13,6 +13,7 @@ class SsoTokenExtension extends AbstractExtension
     {
         return [
             new TwigFunction('generate_sso_token', [SsoTokenExtensionRuntime::class, 'generateToken']),
+            new TwigFunction('generate_sso_params', [SsoTokenExtensionRuntime::class, 'generateSsoParams']),
         ];
     }
 }

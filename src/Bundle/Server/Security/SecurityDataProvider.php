@@ -12,6 +12,7 @@ class SecurityDataProvider
     public function __construct(
         private readonly JwtTokenGenerator $tokenGenerator,
         private readonly UserTokenRepository $tokenRepository,
+        private readonly string $serverCode,
     ) {
     }
 
@@ -30,6 +31,7 @@ class SecurityDataProvider
         }
 
         return [
+            'serverCode' => $this->serverCode,
             'userData' => $userToken->getUserData(),
             'refreshToken' => $this->tokenGenerator->generateRefresh($userToken),
         ];

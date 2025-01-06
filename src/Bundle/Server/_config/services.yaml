@@ -7,6 +7,7 @@ services:
     bind:
       $privateKey: '%optime_sso_server.jwt.secret%'
       $expirationSeconds: '%optime_sso_server.jwt.expiration%'
+      $serverCode: '%optime_sso_server.code%'
 
   Optime\Sso\Bundle\Server\:
     resource: '../'

@@ -9,18 +9,24 @@ use Optime\Sso\Bundle\Server\Token\JwtTokenGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
+#[Path('/sso/server')]
 class AuthController extends AbstractController
 {
     public function __construct(private readonly SecurityDataProvider $securityDataProvider)
     {
     }
 
-    #[Route('/auth')]
-    public function auth(Request $request, JwtTokenGenerator $tokenGenerator): Response
+    #[Route('/auth', name: 'optime_sso_server_auth', methods: 'POST')]
+    public function auth(Request $request): Response
     {
-        $jwt = $request->query->get('token');
+        if (!$request->headers->has('sso-token')) {
+            throw new AccessDeniedHttpException('sso-token header not found');
+        }
+
+        $jwt = $request->headers->get('sso-token');
 
         return $this->json($this->securityDataProvider->generate($jwt));
     }
