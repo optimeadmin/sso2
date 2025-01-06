@@ -2,8 +2,11 @@
 
 namespace Optime\Sso\Bundle\Server\DependencyInjection;
 
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class OptimeSsoServerExtension extends Extension
 {
