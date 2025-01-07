@@ -53,7 +53,7 @@ Crear/Ajustar el archivo config/routes/optime_sso_server.yaml:
 ```yaml
 optime_sso_server:
   resource: "@OptimeSsoServerBundle/Controller/"
-  type: annotation
+  type: attribute
   prefix: /sso
 ```
 

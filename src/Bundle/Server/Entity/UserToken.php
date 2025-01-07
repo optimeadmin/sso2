@@ -36,9 +36,6 @@ class UserToken
     private ?array $userData = null;
 
     #[Column]
-    private ?string $refreshToken = null;
-
-    #[Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[Column]
@@ -52,7 +49,6 @@ class UserToken
         $obj = new self();
         $obj->clientCode = $clientCode;
         $obj->token = Uuid::v4();
-        $obj->refreshToken = Uuid::v4();
         $obj->userIdentifier = $userIdentifierAware->getSsoIdentifier();
         $obj->userData = $companyUserData->toArray();
         $obj->createdAt = new \DateTimeImmutable();
@@ -83,10 +79,5 @@ class UserToken
     public function getUserData(): array
     {
         return $this->userData;
-    }
-
-    public function getRefreshToken(): string
-    {
-        return $this->refreshToken;
     }
 }
