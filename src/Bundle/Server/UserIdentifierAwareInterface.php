@@ -2,7 +2,9 @@
 
 namespace Optime\Sso\Bundle\Server;
 
-interface UserIdentifierAwareInterface
+use Symfony\Component\Security\Core\User\UserInterface;
+
+interface UserIdentifierAwareInterface extends UserInterface
 {
     public function getSsoIdentifier(): string|int;
 }
