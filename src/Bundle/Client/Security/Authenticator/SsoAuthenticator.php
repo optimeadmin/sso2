@@ -12,11 +12,13 @@ use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-class SsoAuthenticator extends AbstractAuthenticator
+class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     public function __construct(
         private readonly SsoUserProvider $ssoUserProvider,
+        private readonly SsoEntryPoint $entryPoint,
     ) {
     }
 
@@ -37,11 +39,18 @@ class SsoAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        dd($token);
         return null;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        dd($exception);
         return null;
+    }
+
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
+    {
+        return $this->entryPoint->start($request, $authException);
     }
 }

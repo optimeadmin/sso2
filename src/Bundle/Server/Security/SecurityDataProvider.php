@@ -33,7 +33,6 @@ class SecurityDataProvider
         return [
             'serverCode' => $this->serverCode,
             'userData' => $userToken->getUserData(),
-            'refreshToken' => $this->tokenGenerator->generateRefresh($userToken),
         ];
     }
 }

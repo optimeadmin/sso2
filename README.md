@@ -114,6 +114,8 @@ security:
   firewalls:
     main:
       # ...
+      entry_point: Optime\Sso\Bundle\Client\Security\Authenticator\SsoAuthenticator
+      #entry_point: Optime\Sso\Bundle\Client\Security\Authenticator\SsoEntryPoint
       custom_authenticators:
         - Optime\Sso\Bundle\Client\Security\Authenticator\SsoAuthenticator
 ```

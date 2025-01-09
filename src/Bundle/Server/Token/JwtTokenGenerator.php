@@ -18,7 +18,7 @@ class JwtTokenGenerator
         private readonly RequestStack $requestStack,
         private readonly ServerTokenGenerator $tokenGenerator,
         private readonly string $privateKey,
-        private readonly string $expirationSeconds,
+        private readonly int $expirationSeconds,
     ) {
     }
 
@@ -48,18 +48,6 @@ class JwtTokenGenerator
             [
                 'token' => $token->getToken(),
                 'exp' => time() + $this->expirationSeconds,
-            ],
-            $this->privateKey,
-            'HS256'
-        );
-    }
-
-    public function generateRefresh(UserToken $token): string
-    {
-        return JWT::encode(
-            [
-                'refresh' => $token->getRefreshToken(),
-                'exp' => time() + (3600 * 24),
             ],
             $this->privateKey,
             'HS256'
