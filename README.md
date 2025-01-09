@@ -81,3 +81,39 @@ y se debe tener una sesion independiente por cliente.
  * `user` Usuario logueado, se debe pasar la instancia del usuario logueado actualmente.
  * `regenerateAfter` (opcional, default 60 segundos) este es el tiempo en segundos durante el cual no se
 vuelve a mandar un nuevo token de sesion al cliente una vez se haya iniciado sesión correctamente.
+
+<hr>
+
+## ClientBundle
+
+Este bundle se encarga de recibir la información para iniciar la sesión en el cliente.
+
+### Instalación
+
+```
+composer require "optimeconsulting/sso2" "@dev"
+```
+
+### Configuración
+
+Agregar como un bundle en el config/bundles.php:
+
+```php
+<?php
+
+return [
+    ...
+    Optime\Sso\Bundle\Server\OptimeSsoClientBundle::class => ['all' => true],
+];
+```
+
+Ajustar el security.yaml, agregar el autenticador sso como un custom_authenticator:
+
+```yaml
+security:
+  firewalls:
+    main:
+      # ...
+      custom_authenticators:
+        - Optime\Sso\Bundle\Client\Security\Authenticator\SsoAuthenticator
+```
