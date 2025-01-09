@@ -46,6 +46,9 @@ optime_sso_server:
   #jwt_expiration_seconds: 10 # Opcional, por defecto son 10 segundos 
 ```
 
+El servicio que se agrega a **user_data_factory_service** debe ser una clase que implemente la interfaz:
+`Optime\Sso\Bundle\Server\Token\User\UserDataFactoryInterface`
+
 #### Agregar rutas:
 
 Crear/Ajustar el archivo config/routes/optime_sso_server.yaml:
@@ -111,11 +114,28 @@ Ajustar el security.yaml, agregar el autenticador sso como un custom_authenticat
 
 ```yaml
 security:
+  providers:
+    sso: # Opcional
+      id: Optime\Sso\Bundle\Client\Security\User\Provider\SsoUserProvider
   firewalls:
     main:
       # ...
+      # provider: sso # Opcional. 
       entry_point: Optime\Sso\Bundle\Client\Security\Authenticator\SsoAuthenticator
       #entry_point: Optime\Sso\Bundle\Client\Security\Authenticator\SsoEntryPoint
       custom_authenticators:
         - Optime\Sso\Bundle\Client\Security\Authenticator\SsoAuthenticator
 ```
+
+Crear el servicio que creara al usuario a partir de la informacion que viene por sso.
+Este servicio es una clase que implementa:
+
+`Optime\Sso\Bundle\Client\Factory\UserFactoryInterface`
+
+Y definir el servicio en config/packages/optime_sso_client.yaml:
+
+```yaml
+optime_sso_client:
+  user_factory_service: App\Security\SsoUserFactory
+```
+

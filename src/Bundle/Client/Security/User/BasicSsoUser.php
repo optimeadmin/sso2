@@ -2,20 +2,19 @@
 
 namespace Optime\Sso\Bundle\Client\Security\User;
 
-use Optime\Sso\User\CompanyUserData;
+use Optime\Sso\Bundle\Client\Security\SsoData;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class PreAuthenticatedUser implements UserInterface
+class BasicSsoUser implements UserInterface
 {
     public function __construct(
-        public readonly string $serverCode,
-        public readonly CompanyUserData $companyUserData
+        public readonly SsoData $ssoData,
     ) {
     }
 
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+        return $this->ssoData->getRoles();
     }
 
     public function eraseCredentials()
@@ -24,6 +23,6 @@ class PreAuthenticatedUser implements UserInterface
 
     public function getUserIdentifier(): string
     {
-        return '123';
+        return $this->ssoData->getUserIdentifier();
     }
 }

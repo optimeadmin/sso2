@@ -2,8 +2,8 @@
 
 namespace Optime\Sso\Bundle\Client\Security\Authenticator;
 
-use Optime\Sso\Bundle\Client\Security\User\PreAuthenticatedUser;
-use Optime\Sso\Bundle\Client\Security\User\Provider\SsoUserProvider;
+use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
+use Optime\Sso\Bundle\Client\Security\SsoDataProvider;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -12,13 +12,15 @@ use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
 class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     public function __construct(
-        private readonly SsoUserProvider $ssoUserProvider,
+        private readonly SsoDataProvider $ssoDataProvider,
         private readonly SsoEntryPoint $entryPoint,
+        private readonly UserFactoryInterface $userFactory,
     ) {
     }
 
@@ -32,20 +34,37 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         $authToken = $request->query->get('sso-token');
         $authUrl = $request->query->get('sso-auth-url');
 
-        return new SelfValidatingPassport(new UserBadge($authToken, function ($token) use ($authUrl) {
-            return $this->ssoUserProvider->getUserByToken($token, $authUrl);
+        $ssoData = $this->ssoDataProvider->byToken($authToken, $authUrl);
+
+        try {
+            $user = $this->userFactory->create($ssoData);
+        } catch (\Throwable $e) {
+            throw new AuthenticationException('Authentication error', $e->getCode(), $e);
+        }
+
+        $passport = new SelfValidatingPassport(new UserBadge($authToken, function () use ($user) {
+            return $user;
         }));
+
+        $passport->setAttribute('sso_data', $ssoData);
+
+        return $passport;
+    }
+
+    public function createToken(Passport $passport, string $firewallName): TokenInterface
+    {
+        $roles = $this->userFactory->getRoles($passport->getUser(), $passport->getAttribute('sso_data'));
+
+        return new PostAuthenticationToken($passport->getUser(), $firewallName, $roles);
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        dd($token);
         return null;
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        dd($exception);
         return null;
     }
 

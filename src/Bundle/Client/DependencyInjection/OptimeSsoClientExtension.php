@@ -2,6 +2,7 @@
 
 namespace Optime\Sso\Bundle\Client\DependencyInjection;
 
+use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\Bundle\Server\Token\User\UserDataFactoryInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\DirectoryResource;
@@ -24,7 +25,7 @@ class OptimeSsoClientExtension extends Extension
 
 //        $container->setParameter('optime_sso_server.jwt.secret', $config['jwt_secret_key']);
 //        $container->setParameter('optime_sso_server.jwt.expiration', $config['jwt_expiration_seconds']);
-//        $container->setAlias(UserDataFactoryInterface::class, $config['user_data_factory_service']);
+        $container->setAlias(UserFactoryInterface::class, $config['user_factory_service']);
 
         $container->addResource(new DirectoryResource(__DIR__.'/../'));
     }

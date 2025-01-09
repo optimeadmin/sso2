@@ -2,6 +2,7 @@
 
 namespace Optime\Sso\Bundle\Client\DependencyInjection;
 
+use Optime\Sso\Bundle\Client\Factory\UserFactory;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -14,7 +15,10 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-//                ->scalarNode('user_data_factory_service')->isRequired()->end()
+                ->scalarNode('user_factory_service')
+                    ->cannotBeEmpty()
+                    ->defaultValue(UserFactory::class)
+                ->end()
 //                ->scalarNode('jwt_secret_key')->isRequired()->end()
 //                ->scalarNode('jwt_expiration_seconds')->defaultValue(10)->end()
             ->end()
