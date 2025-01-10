@@ -4,7 +4,7 @@ namespace Optime\Sso\Bundle\Client\Security;
 
 use Optime\Sso\User\CompanyUserData;
 
-class SsoData
+class SsoData implements \JsonSerializable
 {
     public function __construct(
         public readonly string $serverCode,
@@ -20,5 +20,13 @@ class SsoData
     public function getUserIdentifier(): string
     {
         return $this->companyUserData->user->usernameOrEmail;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'serverCode' => $this->serverCode,
+            'data' => $this->companyUserData->toArray(),
+        ];
     }
 }

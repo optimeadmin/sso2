@@ -17,18 +17,6 @@ class UserTokenRepository extends ServiceEntityRepository
     {
         $entityManager = $this->getEntityManager();
 
-        $entityManager
-            ->createQueryBuilder()
-            ->update(UserToken::class, 't')
-            ->set('t.active', 'false')
-            ->where('t.active = true')
-            ->andWhere('t.clientCode = :client_code')
-            ->andWhere('t.userIdentifier = :user_identifier')
-            ->setParameter('client_code', $token->getClientCode())
-            ->setParameter('user_identifier', $token->getUserIdentifier())
-            ->getQuery()
-            ->execute();
-
         $entityManager->persist($token);
         $entityManager->flush();
     }
@@ -36,5 +24,21 @@ class UserTokenRepository extends ServiceEntityRepository
     public function getValidToken(string $token): ?UserToken
     {
         return $this->findOneBy(['token' => $token]);
+    }
+
+    public function clearTokens(UserToken $token): void
+    {
+        $this->getEntityManager()
+            ->createQueryBuilder()
+            ->delete(UserToken::class, 't')
+            ->andWhere('t.clientCode = :client_code')
+            ->andWhere('t.userIdentifier = :user_identifier')
+            ->andWhere('(t.createdAt < :created_at OR t.token = :token)')
+            ->setParameter('client_code', $token->getClientCode())
+            ->setParameter('user_identifier', $token->getUserIdentifier())
+            ->setParameter('token', $token->getToken())
+            ->setParameter('created_at', new \DateTimeImmutable('-5 minutes'))
+            ->getQuery()
+            ->execute();
     }
 }

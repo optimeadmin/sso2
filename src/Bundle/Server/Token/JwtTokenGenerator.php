@@ -4,12 +4,9 @@ namespace Optime\Sso\Bundle\Server\Token;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Optime\Sso\Bundle\Server\Entity\UserToken;
-use Optime\Sso\Bundle\Server\Token\ServerTokenGenerator;
 use Optime\Sso\Bundle\Server\UserIdentifierAwareInterface;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class JwtTokenGenerator
@@ -47,6 +44,7 @@ class JwtTokenGenerator
         return JWT::encode(
             [
                 'token' => $token->getToken(),
+                'clientCode' => $token->getClientCode(),
                 'exp' => time() + $this->expirationSeconds,
             ],
             $this->privateKey,
@@ -54,9 +52,11 @@ class JwtTokenGenerator
         );
     }
 
-    public function decodeToken(string $encodedToken): string
+    public function decodeToken(string $encodedToken): array
     {
-        return JWT::decode($encodedToken, new Key($this->privateKey, 'HS256'))->token;
+        $data = JWT::decode($encodedToken, new Key($this->privateKey, 'HS256'));
+
+        return [$data->token, $data->clientCode];
     }
 
     private function getSession(): ?SessionInterface

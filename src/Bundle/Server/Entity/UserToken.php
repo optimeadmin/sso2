@@ -18,16 +18,15 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class UserToken
 {
-    #[Id]
     #[Column]
     #[GeneratedValue]
     private ?int $id = null;
 
-    #[Column]
-    private ?string $clientCode = null;
+    #[Column(unique: true)]
+    private ?string $token = null;
 
     #[Column]
-    private ?string $token = null;
+    private ?string $clientCode = null;
 
     #[Column(type: 'string')]
     private null|string|int $userIdentifier = null;
@@ -37,9 +36,6 @@ class UserToken
 
     #[Column]
     private ?\DateTimeImmutable $createdAt = null;
-
-    #[Column]
-    private ?bool $active = true;
 
     public static function fromUser(
         string $clientCode,
@@ -56,19 +52,14 @@ class UserToken
         return $obj;
     }
 
-    public function getId(): ?int
+    public function getToken(): string
     {
-        return $this->id;
+        return $this->token;
     }
 
     public function getClientCode(): string
     {
         return $this->clientCode;
-    }
-
-    public function getToken(): string
-    {
-        return $this->token;
     }
 
     public function getUserIdentifier(): string|int

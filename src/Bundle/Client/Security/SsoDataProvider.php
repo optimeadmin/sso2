@@ -4,6 +4,11 @@ namespace Optime\Sso\Bundle\Client\Security;
 
 use Optime\Sso\User\CompanyUserData;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SsoDataProvider
@@ -13,6 +18,13 @@ class SsoDataProvider
     ) {
     }
 
+    /**
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     */
     public function byToken(string $token, string $url): SsoData
     {
         $response = $this->httpClient->request(

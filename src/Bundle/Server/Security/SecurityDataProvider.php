@@ -19,7 +19,7 @@ class SecurityDataProvider
     public function generate(string $jwt): array
     {
         try {
-            $token = $this->tokenGenerator->decodeToken($jwt);
+            [$token, $clientCode] = $this->tokenGenerator->decodeToken($jwt);
         } catch (\Exception $e) {
             throw new AccessDeniedHttpException($e->getMessage(), $e);
         }
@@ -29,6 +29,8 @@ class SecurityDataProvider
         if (!$userToken) {
             throw new AccessDeniedHttpException('Token not found');
         }
+
+        $this->tokenRepository->clearTokens($userToken);
 
         return [
             'serverCode' => $this->serverCode,
