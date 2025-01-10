@@ -7,8 +7,9 @@ Consta de dos bundles, un bundle como servidor un bundle como cliente.
 
 ## Importante
 
- * **Si vas a implementar login del lado del cliente (por ejemplo dentro del iframe)** debes usar el ClientBundle.
- * **Si vas a compartir la sesion con un cliente (por ejemplo, tu generas el link del iframe)** debes usar el ServerBundle.
+* **Si vas a implementar login del lado del cliente (por ejemplo dentro del iframe)** debes usar el ClientBundle.
+* **Si vas a compartir la sesion con un cliente (por ejemplo, tu generas el link del iframe)** debes usar el
+  ServerBundle.
 
 ## ServerBundle
 
@@ -80,12 +81,10 @@ En twig:
     scrolling='no'
 ></iframe>
 
-<script src="{{ asset('bundles/optimessoserver/iframeResizer.min.js') }}"></script>
-<script>
-  window.iFrameResize({
-    checkOrigin: false,
-    minHeight: 400
-  }, '#iframe_name_id')
+<script type="module">
+  import { initialize } from "{{ asset('bundles/optimessoserver/iframe-resizer.js') }}";
+
+  initialize({}, "#my_iframe");
 </script>
 ```
 
@@ -93,10 +92,10 @@ Recordar incluir el script del iframe resizer (codigo anterior).
 
 Tener en cuenta que la funcion de twig `iframe_sso_url` recibe 2 parametros:
 
- * `clientCode` este es un string que identifica a la app cliente, esto porque pueden haber varios clientes
-y se debe tener una sesion independiente por cliente.
- * `regenerateAfter` (opcional, default 10 segundos) este es el tiempo en segundos durante el cual no se
-vuelve a mandar un nuevo token de sesion al cliente una vez se haya iniciado sesión correctamente.
+* `clientCode` este es un string que identifica a la app cliente, esto porque pueden haber varios clientes
+  y se debe tener una sesion independiente por cliente.
+* `regenerateAfter` (opcional, default 10 segundos) este es el tiempo en segundos durante el cual no se
+  vuelve a mandar un nuevo token de sesion al cliente una vez se haya iniciado sesión correctamente.
 
 Si se necesita generar la url en el momento que un usuario da click en un link, se debe usar la forma:
 
@@ -169,17 +168,16 @@ symfony console doctrine:schema:update -f
 Se debe cargar el siguiente script en el cliente:
 
 ```jinja
-<script src="{{ asset('bundles/optimessoclient/iframeSizer.contentWindow.min.js') }}" async></script>
+<script src="{{ asset('bundles/optimessoclient/iframe-resizer.js') }}" async></script>
 ```
 
 Recordar que en el servidor donde se genera el iframe, se debe incluir lo siguiente luego del iframe:
 
 ```jinja
-<script src="{{ asset('bundles/optimessoserver/iframeResizer.min.js') }}"></script>
-<script>
-  window.iFrameResize({
-    checkOrigin: false,
-    minHeight: 400
-  }, '#<id-del-la-etiqueta-iframe>')
+<script type="module">
+  import { initialize } from "{{ asset('bundles/optimessoserver/iframe-resizer.js') }}";
+
+  initialize({}, "#<id-del-la-etiqueta-iframe>");
+</script>
 ```
 
