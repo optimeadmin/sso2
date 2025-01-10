@@ -8,14 +8,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserFactory implements UserFactoryInterface
 {
-
-    public function create(SsoData $ssoData): UserInterface
+    public function create(SsoData $ssoData): UserFactoryResult
     {
-        return new BasicSsoUser($ssoData);
-    }
-
-    public function getRoles(UserInterface $user, SsoData $ssoData): array
-    {
-        return $user->getRoles();
+        return new UserFactoryResult(new BasicSsoUser($ssoData));
     }
 }

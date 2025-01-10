@@ -6,6 +6,7 @@ use Optime\SimpleSsoClientBundle\Event\SimpleSsoLoginEvent;
 use Optime\SimpleSsoClientBundle\Security\TokenAttributes;
 use Optime\Sso\Bundle\Client\Event\LoginSuccessEvent;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
+use Optime\Sso\Bundle\Client\Factory\UserFactoryResult;
 use Optime\Sso\Bundle\Client\Log\LoginErrorLogger;
 use Optime\Sso\Bundle\Client\Security\SsoDataProvider;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -54,34 +55,32 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         }
 
         try {
-            $user = $this->userFactory->create($ssoData);
+            $userData = $this->userFactory->create($ssoData);
         } catch (\Throwable $e) {
             $this->errorLogger->forClientAuth($e, $ssoData, 'user_factory');
 
             throw new AuthenticationException('Authentication error', $e->getCode(), $e);
         }
 
-        $passport = new SelfValidatingPassport(new UserBadge($authToken, function () use ($user) {
-            return $user;
+        $passport = new SelfValidatingPassport(new UserBadge($authToken, function () use ($userData) {
+            return $userData->getUser();
         }));
 
-        $passport->setAttribute('sso_data', $ssoData);
+        $passport->setAttribute('user_data', $userData);
 
         return $passport;
     }
 
     public function createToken(Passport $passport, string $firewallName): TokenInterface
     {
-        try {
-            $roles = $this->userFactory->getRoles($passport->getUser(), $passport->getAttribute('sso_data'));
+        /** @var UserFactoryResult $userData */
+        $userData = $passport->getAttribute('user_data');
+        $roles = $userData->getRoles();
 
-        } catch (\Throwable $exception) {
-            $this->errorLogger->forClientAuth($exception, $passport->getAttribute('sso_data'), 'get_roles');
+        $token = new PostAuthenticationToken($passport->getUser(), $firewallName, $roles);
+        $token->setAttributes($userData->getAttributes());
 
-            throw new AuthenticationException('Authentication error with roles', $exception->getCode(), $exception);
-        }
-
-        return new PostAuthenticationToken($passport->getUser(), $firewallName, $roles);
+        return $token;
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
