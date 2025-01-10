@@ -15,7 +15,7 @@ class UserData
     public function toArray(): array
     {
         return [
-            'base' > [
+            'base' => [
                 'id' => $this->id,
                 'usernameOrEmail' => $this->usernameOrEmail,
                 'roles' => $this->roles,

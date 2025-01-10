@@ -14,7 +14,7 @@ class ProfileData
     public function toArray(): array
     {
         return [
-            'base' > [
+            'base' => [
                 'id' => $this->id,
                 'name' => $this->name,
             ],
