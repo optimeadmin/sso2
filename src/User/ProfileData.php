@@ -14,9 +14,11 @@ class ProfileData
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'extraData' => $this->extraData,
+            'base' > [
+                'id' => $this->id,
+                'name' => $this->name,
+            ],
+            'extra' => $this->extraData,
         ];
     }
 }

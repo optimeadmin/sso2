@@ -15,10 +15,12 @@ class UserData
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'usernameOrEmail' => $this->usernameOrEmail,
-            'extraData' => $this->extraData,
-            'roles' => $this->roles,
+            'base' > [
+                'id' => $this->id,
+                'usernameOrEmail' => $this->usernameOrEmail,
+                'roles' => $this->roles,
+            ],
+            'extra' => $this->extraData,
         ];
     }
 }

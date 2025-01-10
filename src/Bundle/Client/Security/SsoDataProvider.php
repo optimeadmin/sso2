@@ -2,8 +2,10 @@
 
 namespace Optime\Sso\Bundle\Client\Security;
 
+use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\User\CompanyUserData;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -17,6 +19,7 @@ class SsoDataProvider
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly RequestStack $requestStack,
+        private readonly UserFactoryInterface $userFactory,
     ) {
     }
 
@@ -54,8 +57,38 @@ class SsoDataProvider
 
         return new SsoData(
             $data['serverCode'],
-            CompanyUserData::fromArray($data['userData']),
+            CompanyUserData::fromArray($this->resolveData($data['userData'])),
         );
+    }
+
+    private function resolveData(array $serverData): array
+    {
+        $companyResolver = new OptionsResolver();
+        $userResolver = new OptionsResolver();
+        $profileResolver = new OptionsResolver();
+        $extraDataResolver = new OptionsResolver();
+
+        $companyResolver->setIgnoreUndefined();
+        $userResolver->setIgnoreUndefined();
+        $profileResolver->setIgnoreUndefined();
+        $extraDataResolver->setIgnoreUndefined();
+
+        $this->userFactory->configureOptions($companyResolver, $userResolver, $profileResolver, $extraDataResolver);
+
+        return [
+            'company' => $this->resolveKey($companyResolver, $serverData['company'] ?? []),
+            'user' => $this->resolveKey($userResolver, $serverData['user'] ?? []),
+            'profile' => $this->resolveKey($profileResolver, $serverData['profile'] ?? []),
+            'extraData' => $extraDataResolver->resolve($data['extraData'] ?? []),
+        ];
+    }
+
+    private function resolveKey(OptionsResolver $resolver, array $keyData): array
+    {
+        return [
+            'base' => $keyData['base'] ?? [],
+            'extra' => $resolver->resolve($keyData['extra'] ?? []),
+        ];
     }
 
     private function isLocalServer(): bool

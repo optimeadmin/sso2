@@ -15,20 +15,20 @@ class CompanyUserData
     public static function fromArray(array $data): self
     {
         $companyData = new CompanyData(
-            $data['company']['id'] ?? 0,
-            $data['company']['name'] ?? '',
-            $data['company']['extraData'] ?? [],
+            $data['company']['base']['id'] ?? 0,
+            $data['company']['base']['name'] ?? '',
+            $data['company']['extra'] ?? [],
         );
         $userData = new UserData(
-            $data['user']['id'] ?? 0,
-            $data['user']['usernameOrEmail'] ?? '',
-            $data['user']['extraData'] ?? [],
-            $data['user']['roles'] ?? null,
+            $data['user']['base']['id'] ?? 0,
+            $data['user']['base']['usernameOrEmail'] ?? '',
+            $data['user']['extra'] ?? [],
+            $data['user']['base']['roles'] ?? null,
         );
         $profileData = new ProfileData(
-            $data['profile']['id'] ?? 0,
-            $data['profile']['name'] ?? '',
-            $data['profile']['extraData'] ?? [],
+            $data['profile']['base']['id'] ?? 0,
+            $data['profile']['base']['name'] ?? '',
+            $data['profile']['extra'] ?? [],
         );
 
         return new self($companyData, $userData, $profileData, $data['extraData'] ?? []);
@@ -40,6 +40,7 @@ class CompanyUserData
             'company' => $this->company->toArray(),
             'user' => $this->user->toArray(),
             'profile' => $this->profile->toArray(),
+            'extraData' => $this->extraData,
         ];
     }
 }
