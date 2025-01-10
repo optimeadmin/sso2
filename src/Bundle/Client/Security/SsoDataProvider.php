@@ -3,6 +3,7 @@
 namespace Optime\Sso\Bundle\Client\Security;
 
 use Optime\Sso\User\CompanyUserData;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
@@ -15,6 +16,7 @@ class SsoDataProvider
 {
     public function __construct(
         private readonly HttpClientInterface $httpClient,
+        private readonly RequestStack $requestStack,
     ) {
     }
 
@@ -32,6 +34,7 @@ class SsoDataProvider
             $url,
             [
                 'headers' => ['sso-token' => $token],
+                'verify_peer' => !$this->isLocalServer(),
             ]
         );
 
@@ -53,5 +56,12 @@ class SsoDataProvider
             $data['serverCode'],
             CompanyUserData::fromArray($data['userData']),
         );
+    }
+
+    private function isLocalServer(): bool
+    {
+        $ip = $this->requestStack->getCurrentRequest()->getClientIp();
+
+        return in_array($ip, ['127.0.0.1', 'fe80::1', '::1']);
     }
 }
