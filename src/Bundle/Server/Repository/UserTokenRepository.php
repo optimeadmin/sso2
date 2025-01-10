@@ -37,7 +37,7 @@ class UserTokenRepository extends ServiceEntityRepository
             ->setParameter('client_code', $token->getClientCode())
             ->setParameter('user_identifier', $token->getUserIdentifier())
             ->setParameter('token', $token->getToken())
-            ->setParameter('created_at', new \DateTimeImmutable('-5 minutes'))
+            ->setParameter('created_at', new \DateTimeImmutable('-1 minutes'))
             ->getQuery()
             ->execute();
     }

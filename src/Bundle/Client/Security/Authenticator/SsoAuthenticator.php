@@ -2,10 +2,15 @@
 
 namespace Optime\Sso\Bundle\Client\Security\Authenticator;
 
+use Optime\SimpleSsoClientBundle\Event\SimpleSsoLoginEvent;
+use Optime\SimpleSsoClientBundle\Security\TokenAttributes;
+use Optime\Sso\Bundle\Client\Event\LoginSuccessEvent;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\Bundle\Client\Log\LoginErrorLogger;
 use Optime\Sso\Bundle\Client\Security\SsoDataProvider;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -25,6 +30,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         private readonly SsoEntryPoint $entryPoint,
         private readonly UserFactoryInterface $userFactory,
         private readonly TokenStorageInterface $tokenStorage,
+        private readonly EventDispatcherInterface $dispatcher,
         private readonly LoginErrorLogger $errorLogger,
     ) {
     }
@@ -82,7 +88,19 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
     {
         $this->errorLogger->reset();
 
-        return null;
+        $event = new LoginSuccessEvent($request, $token, $firewallName);
+        $this->dispatcher->dispatch($event);
+
+        if ($event->hasResponse()) {
+            return $event->getResponse();
+        }
+
+        $request = $request->duplicate();
+        $request->query->remove('sso-token');
+        $request->query->remove('sso-auth-url');
+        $request->server->set('QUERY_STRING', http_build_query($request->query->all()));
+
+        return new RedirectResponse($request->getUri(), 302);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response

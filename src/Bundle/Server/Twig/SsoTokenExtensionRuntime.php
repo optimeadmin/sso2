@@ -2,6 +2,7 @@
 
 namespace Optime\Sso\Bundle\Server\Twig;
 
+use Optime\Sso\Bundle\Server\SsoParamsGenerator;
 use Optime\Sso\Bundle\Server\Token\JwtTokenGenerator;
 use Optime\Sso\Bundle\Server\UserIdentifierAwareInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -12,13 +13,14 @@ class SsoTokenExtensionRuntime implements RuntimeExtensionInterface
     public function __construct(
         private readonly JwtTokenGenerator $tokenGenerator,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly SsoParamsGenerator $ssoParamsGenerator,
     ) {
     }
 
     public function generateToken(
         string $clientCode,
         UserIdentifierAwareInterface $userIdentifierAware,
-        int $regenerateAfter = 60,
+        int $regenerateAfter = 10,
     ): ?string {
         return $this->tokenGenerator->generate($clientCode, $userIdentifierAware, $regenerateAfter);
     }
@@ -26,21 +28,17 @@ class SsoTokenExtensionRuntime implements RuntimeExtensionInterface
     public function generateSsoParams(
         string $clientCode,
         UserIdentifierAwareInterface $userIdentifierAware,
-        int $regenerateAfter = 60,
+        int $regenerateAfter = 10,
     ): array {
-        $token = $this->generateToken($clientCode, $userIdentifierAware, $regenerateAfter);
+        return $this->ssoParamsGenerator->generate($clientCode, $userIdentifierAware, $regenerateAfter);
+    }
 
-        if (!$token) {
-            return [];
-        }
-
-        return [
-            'sso-token' => $token,
-            'sso-auth-url' => $this->urlGenerator->generate(
-                'optime_sso_server_auth',
-                [],
-                UrlGeneratorInterface::ABSOLUTE_URL,
-            ),
-        ];
+    public function generateSsoUrl(string $clientCode, string $url, int $regenerateAfter = 0): array
+    {
+        return $this->urlGenerator->generate('optime_sso_server_generate_url', [
+            'client' => $clientCode,
+            'target' => urlencode($url),
+            'regenerateAfter' => $regenerateAfter,
+        ]);
     }
 }

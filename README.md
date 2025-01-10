@@ -75,14 +75,20 @@ En twig:
 <iframe src="{{ url('app_client_page', generate_sso_params('client_code', app.user)) }}"></iframe>
 ```
 
-Tener en cuenta que tanto la funcion de twig `generate_sso_params` como el servicio ... reciben
-tres parametros:
+Tener en cuenta que tanto la funcion de twig `generate_sso_params` como el servicio 
+`\Optime\Sso\Bundle\Server\SsoParamsGenerator` reciben tres parametros:
 
  * `clientCode` este es un string que identifica a la app cliente, esto porque pueden haber varios clientes
 y se debe tener una sesion independiente por cliente.
  * `user` Usuario logueado, se debe pasar la instancia del usuario logueado actualmente.
  * `regenerateAfter` (opcional, default 60 segundos) este es el tiempo en segundos durante el cual no se
 vuelve a mandar un nuevo token de sesion al cliente una vez se haya iniciado sesión correctamente.
+
+Si se necesita generar la url en el momento que un usuario da click en un link, se debe usar la forma:
+
+```jinja
+<a href="{{ generate_sso_url('client_code', 'http://url-cliente.com/test') }}">My Link</a>
+```
 
 <hr>
 
@@ -136,5 +142,11 @@ Y definir el servicio en config/packages/optime_sso_client.yaml:
 ```yaml
 optime_sso_client:
   user_factory_service: App\Security\SsoUserFactory
+```
+
+Correr comando de doctrine:
+
+```
+symfony console doctrine:schema:update -f
 ```
 
