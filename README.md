@@ -56,7 +56,7 @@ Crear/Ajustar el archivo config/routes/optime_sso_server.yaml:
 optime_sso_server:
   resource: "@OptimeSsoServerBundle/Controller/"
   type: attribute
-  prefix: /sso
+  prefix: /
 ```
 
 Correr comando de doctrine:
