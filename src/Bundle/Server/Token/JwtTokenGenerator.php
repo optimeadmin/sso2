@@ -15,7 +15,6 @@ class JwtTokenGenerator
         private readonly RequestStack $requestStack,
         private readonly ServerTokenGenerator $tokenGenerator,
         private readonly string $privateKey,
-        private readonly int $expirationSeconds,
     ) {
     }
 
@@ -45,7 +44,7 @@ class JwtTokenGenerator
             [
                 'token' => $token->getToken(),
                 'clientCode' => $token->getClientCode(),
-                'exp' => time() + $this->expirationSeconds,
+                'exp' => time() + 30,
             ],
             $this->privateKey,
             'HS256'

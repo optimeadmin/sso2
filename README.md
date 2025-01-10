@@ -43,7 +43,6 @@ optime_sso_server:
   server_code: video_2_market # Codigo unico para el server (el cliente puedo conectarse a varios servers).
   user_data_factory_service: # App\Security\User\SsoUserDataFactory Servicio que genera la data necesaria para la sesión.
   jwt_secret_key: # Clave secreta para JWT, se debe establecer un valor
-  #jwt_expiration_seconds: 10 # Opcional, por defecto son 10 segundos 
 ```
 
 El servicio que se agrega a **user_data_factory_service** debe ser una clase que implemente la interfaz:
