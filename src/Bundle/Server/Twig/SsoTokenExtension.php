@@ -15,6 +15,7 @@ class SsoTokenExtension extends AbstractExtension
             new TwigFunction('generate_sso_token', [SsoTokenExtensionRuntime::class, 'generateToken']),
             new TwigFunction('generate_sso_params', [SsoTokenExtensionRuntime::class, 'generateSsoParams']),
             new TwigFunction('generate_sso_url', [SsoTokenExtensionRuntime::class, 'generateSsoUrl']),
+            new TwigFunction('iframe_sso_url', [SsoTokenExtensionRuntime::class, 'generateIframeSsoUrl']),
         ];
     }
 }
