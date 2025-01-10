@@ -10,8 +10,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Path('/sso/url')]
+#[IsGranted('IS_AUTHENTICATED')]
+#[Route('/sso/url')]
 class UrlController extends AbstractController
 {
     public function __construct(
