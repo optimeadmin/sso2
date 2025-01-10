@@ -20,6 +20,6 @@ class UserFactory implements UserFactoryInterface
         OptionsResolver $profileOptions,
         OptionsResolver $extraOptions,
     ): void {
-        
+
     }
 }
