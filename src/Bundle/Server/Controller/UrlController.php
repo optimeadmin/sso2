@@ -36,7 +36,7 @@ class UrlController extends AbstractController
         }
 
         $ssoData = $this->paramsGenerator->generate($client, $this->getUser(), $regenerateAfter);
-        $url = $target.(str_contains('?', $target) ? '&' : '?').http_build_query($ssoData);
+        $url = $target.(str_contains($target, '?') ? '&' : '?').http_build_query($ssoData);
 
         return $this->redirect($url);
     }

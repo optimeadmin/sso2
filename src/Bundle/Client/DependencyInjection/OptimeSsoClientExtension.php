@@ -24,9 +24,9 @@ class OptimeSsoClientExtension extends Extension
         $loader->load('services.yaml');
 
 //        $container->setParameter('optime_sso_server.jwt.secret', $config['jwt_secret_key']);
-//        $container->setParameter('optime_sso_server.jwt.expiration', $config['jwt_expiration_seconds']);
+        $container->setParameter('optime_sso_client.inject_iframe_resizer', $config['auto_inject_iframe_resizer']);
         $container->setAlias(UserFactoryInterface::class, $config['user_factory_service']);
 
-        $container->addResource(new DirectoryResource(__DIR__.'/../'));
+//        $container->addResource(new DirectoryResource(__DIR__.'/../'));
     }
 }

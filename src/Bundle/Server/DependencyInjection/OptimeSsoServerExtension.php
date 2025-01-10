@@ -27,6 +27,6 @@ class OptimeSsoServerExtension extends Extension
         $container->setParameter('optime_sso_server.jwt.expiration', $config['jwt_expiration_seconds']);
         $container->setAlias(UserDataFactoryInterface::class, $config['user_data_factory_service']);
 
-        $container->addResource(new DirectoryResource(__DIR__.'/../'));
+//        $container->addResource(new DirectoryResource(__DIR__.'/../'));
     }
 }

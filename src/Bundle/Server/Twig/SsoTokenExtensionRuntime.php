@@ -48,6 +48,6 @@ class SsoTokenExtensionRuntime implements RuntimeExtensionInterface
     {
         $ssoData = $this->generateSsoParams($clientCode, $this->security->getUser(), $regenerateAfter);
 
-        return $externalUrl.(str_contains('?', $externalUrl) ? '&' : '?').http_build_query($ssoData);
+        return $externalUrl.(str_contains($externalUrl, '?') ? '&' : '?').http_build_query($ssoData);
     }
 }

@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
                     ->cannotBeEmpty()
                     ->defaultValue(UserFactory::class)
                 ->end()
-//                ->scalarNode('jwt_secret_key')->isRequired()->end()
+                ->booleanNode('auto_inject_iframe_resizer')->defaultTrue()->end()
 //                ->scalarNode('jwt_expiration_seconds')->defaultValue(10)->end()
             ->end()
         ;

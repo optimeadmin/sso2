@@ -155,6 +155,7 @@ Y definir el servicio en config/packages/optime_sso_client.yaml:
 ```yaml
 optime_sso_client:
   user_factory_service: App\Security\SsoUserFactory
+  # auto_inject_iframe_resizer: true Por defecto true, indica si se incluye el script de iframe resize automaticamente 
 ```
 
 Correr comando de doctrine:
@@ -168,7 +169,7 @@ symfony console doctrine:schema:update -f
 Se debe cargar el siguiente script en el cliente:
 
 ```jinja
-<script src="{{ asset('bundles/optimessoclient/iframe-resizer.js') }}" async></script>
+<script type="module" src="{{ asset('bundles/optimessoclient/iframe-resizer.js') }}" async></script>
 ```
 
 Recordar que en el servidor donde se genera el iframe, se debe incluir lo siguiente luego del iframe:
