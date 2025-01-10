@@ -21,7 +21,7 @@ class LoginErrorLogger implements ResetInterface
     public function forServer(\Throwable $error, string $authToken, string $authUrl, ?array $ssoData = null): void
     {
         $log = new SsoLoginError();
-        $log->error = $error->getMessage();
+        $log->error = $this->parseException($error);
         $log->authToken = $authToken;
         $log->authUrl = $authUrl;
         $log->ssoData = $ssoData;
@@ -33,7 +33,7 @@ class LoginErrorLogger implements ResetInterface
     public function forClientAuth(\Throwable $error, ?SsoData $data, string $step): void
     {
         $log = new SsoLoginError();
-        $log->error = $error->getMessage();
+        $log->error = $this->parseException($error);
         $log->userIdentifier = $data?->getUserIdentifier();
         $log->ssoData = $data?->jsonSerialize();
         $log->step = $step;
@@ -64,5 +64,10 @@ class LoginErrorLogger implements ResetInterface
                 'sso_error' => $ssoError,
             ]);
         }
+    }
+
+    private function parseException(\Throwable $error): string
+    {
+        return sprintf('%s [%s (%s)]', $error->getMessage(), $error->getFile(), $error->getLine());
     }
 }
