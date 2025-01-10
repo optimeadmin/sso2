@@ -13,9 +13,12 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-class SsoDataProvider
+class SsoDataProvider implements ResetInterface
 {
+    private ?array $lastSsoData = [];
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly RequestStack $requestStack,
@@ -32,6 +35,8 @@ class SsoDataProvider
      */
     public function byToken(string $token, string $url): SsoData
     {
+        $this->reset();
+
         $response = $this->httpClient->request(
             'POST',
             $url,
@@ -45,7 +50,8 @@ class SsoDataProvider
             throw new AuthenticationException(strip_tags($response->getContent(false)));
         }
 
-        $data = $response->toArray(false) ?? [];
+        $data = $response->toArray() ?? [];
+        $this->lastSsoData = $data;
 
         if (!isset($data['serverCode'])) {
             throw new AuthenticationException('serverCode is required in auth server response');
@@ -59,6 +65,16 @@ class SsoDataProvider
             $data['serverCode'],
             CompanyUserData::fromArray($this->resolveData($data['userData'])),
         );
+    }
+
+    public function reset(): void
+    {
+        $this->lastSsoData = [];
+    }
+
+    public function getLastSsoData(): ?array
+    {
+        return $this->lastSsoData;
     }
 
     private function resolveData(array $serverData): array

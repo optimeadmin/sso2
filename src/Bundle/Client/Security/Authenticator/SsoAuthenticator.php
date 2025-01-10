@@ -49,7 +49,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         try {
             $ssoData = $this->ssoDataProvider->byToken($authToken, $authUrl);
         } catch (\Throwable $error) {
-            $this->errorLogger->forServer($error, $authToken, $authUrl);
+            $this->errorLogger->forServer($error, $authToken, $authUrl, $this->ssoDataProvider->getLastSsoData());
 
             throw $error;
         }

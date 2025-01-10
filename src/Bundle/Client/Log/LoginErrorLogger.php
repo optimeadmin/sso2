@@ -18,12 +18,13 @@ class LoginErrorLogger implements ResetInterface
     ) {
     }
 
-    public function forServer(\Throwable $error, string $authToken, string $authUrl): void
+    public function forServer(\Throwable $error, string $authToken, string $authUrl, ?array $ssoData = null): void
     {
         $log = new SsoLoginError();
         $log->error = $error->getMessage();
         $log->authToken = $authToken;
         $log->authUrl = $authUrl;
+        $log->ssoData = $ssoData;
         $log->step = 'server_call';
 
         $this->persist($log, $error);
