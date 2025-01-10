@@ -72,7 +72,13 @@ Para iniciar la sesión, el link que cargará la url del cliente debe generarse 
 En twig:
 
 ```jinja
-<iframe id="my_iframe" src="{{ iframe_sso_url('client_code', 'https://client-url/page') }}"></iframe>
+<iframe 
+    id="my_iframe" 
+    src="{{ iframe_sso_url('client_code', 'https://client-url/page') }}"
+    width='100%'
+    rameborder="0"
+    scrolling='no'
+></iframe>
 
 <script src="{{ asset('bundles/optimessoserver/iframeResizer.min.js') }}"></script>
 <script>
