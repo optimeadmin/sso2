@@ -166,7 +166,9 @@ symfony console doctrine:schema:update -f
 
 ### Auto resize del iframe:
 
-Se debe cargar el siguiente script en el cliente:
+**Por defecto el script necesario se agregará en las páginas htmld e forma automática.**
+
+Sin embargo, cuando se configure el `auto_inject_iframe_resizer` en false, se deberá cargar el siguiente script en el cliente:
 
 ```jinja
 <script type="module" src="{{ asset('bundles/optimessoclient/iframe-resizer.js') }}" async></script>
