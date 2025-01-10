@@ -18,7 +18,7 @@ class SsoParamsGenerator
         UserIdentifierAwareInterface $userIdentifierAware,
         int $regenerateAfter = 60,
     ): array {
-        $token = $this->generateToken($clientCode, $userIdentifierAware, $regenerateAfter);
+        $token = $this->tokenGenerator->generate($clientCode, $userIdentifierAware, $regenerateAfter);
 
         if (!$token) {
             return [];
