@@ -12,9 +12,9 @@ class LoginSuccessEvent extends Event
     private ?Response $response = null;
 
     public function __construct(
-        private readonly Request $request,
-        private readonly TokenInterface $token,
-        private readonly string $firewallName,
+        public readonly Request $request,
+        public readonly TokenInterface $token,
+        public readonly string $firewallName,
     ) {
     }
 
