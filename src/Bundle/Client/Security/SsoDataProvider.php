@@ -95,7 +95,7 @@ class SsoDataProvider implements ResetInterface
             'company' => $this->resolveKey($companyResolver, $serverData['company'] ?? []),
             'user' => $this->resolveKey($userResolver, $serverData['user'] ?? []),
             'profile' => $this->resolveKey($profileResolver, $serverData['profile'] ?? []),
-            'extraData' => $extraDataResolver->resolve($data['extraData'] ?? []),
+            'extraData' => $extraDataResolver->resolve($serverData['extraData'] ?? []),
         ];
     }
 
