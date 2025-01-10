@@ -72,16 +72,24 @@ Para iniciar la sesión, el link que cargará la url del cliente debe generarse 
 En twig:
 
 ```jinja
-<iframe src="{{ url('app_client_page', generate_sso_params('client_code', app.user)) }}"></iframe>
+<iframe id="my_iframe" src="{{ iframe_sso_url('client_code', 'https://client-url/page') }}"></iframe>
+
+<script src="{{ asset('bundles/optimessoserver/iframeResizer.min.js') }}"></script>
+<script>
+  window.iFrameResize({
+    checkOrigin: false,
+    minHeight: 400
+  }, '#iframe_name_id')
+</script>
 ```
 
-Tener en cuenta que tanto la funcion de twig `generate_sso_params` como el servicio 
-`\Optime\Sso\Bundle\Server\SsoParamsGenerator` reciben tres parametros:
+Recordar incluir el script del iframe resizer (codigo anterior).
+
+Tener en cuenta que la funcion de twig `iframe_sso_url` recibe 2 parametros:
 
  * `clientCode` este es un string que identifica a la app cliente, esto porque pueden haber varios clientes
 y se debe tener una sesion independiente por cliente.
- * `user` Usuario logueado, se debe pasar la instancia del usuario logueado actualmente.
- * `regenerateAfter` (opcional, default 60 segundos) este es el tiempo en segundos durante el cual no se
+ * `regenerateAfter` (opcional, default 10 segundos) este es el tiempo en segundos durante el cual no se
 vuelve a mandar un nuevo token de sesion al cliente una vez se haya iniciado sesión correctamente.
 
 Si se necesita generar la url en el momento que un usuario da click en un link, se debe usar la forma:
@@ -148,5 +156,24 @@ Correr comando de doctrine:
 
 ```
 symfony console doctrine:schema:update -f
+```
+
+### Auto resize del iframe:
+
+Se debe cargar el siguiente script en el cliente:
+
+```jinja
+<script src="{{ asset('bundles/optimessoclient/iframeSizer.contentWindow.min.js') }}" async></script>
+```
+
+Recordar que en el servidor donde se genera el iframe, se debe incluir lo siguiente luego del iframe:
+
+```jinja
+<script src="{{ asset('bundles/optimessoserver/iframeResizer.min.js') }}"></script>
+<script>
+  window.iFrameResize({
+    checkOrigin: false,
+    minHeight: 400
+  }, '#<id-del-la-etiqueta-iframe>')
 ```
 
