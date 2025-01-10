@@ -2,8 +2,10 @@
 
 namespace Optime\Sso\Bundle\Server\Security;
 
+use Optime\Sso\Bundle\Server\Event\StartAuthEvent;
 use Optime\Sso\Bundle\Server\Repository\UserTokenRepository;
 use Optime\Sso\Bundle\Server\Token\JwtTokenGenerator;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -12,6 +14,7 @@ class SecurityDataProvider
     public function __construct(
         private readonly JwtTokenGenerator $tokenGenerator,
         private readonly UserTokenRepository $tokenRepository,
+        private readonly EventDispatcherInterface $dispatcher,
         private readonly string $serverCode,
     ) {
     }
@@ -31,6 +34,8 @@ class SecurityDataProvider
         }
 
         $this->tokenRepository->clearTokens($userToken);
+
+        $this->dispatcher->dispatch(new StartAuthEvent($userToken));
 
         return [
             'serverCode' => $this->serverCode,

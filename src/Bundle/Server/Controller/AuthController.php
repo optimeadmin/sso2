@@ -16,8 +16,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route('/sso/server')]
 class AuthController extends AbstractController
 {
-    public function __construct(private readonly SecurityDataProvider $securityDataProvider)
-    {
+    public function __construct(
+        private readonly SecurityDataProvider $securityDataProvider,
+    ) {
     }
 
     #[Route('/auth', name: 'optime_sso_server_auth', methods: 'POST')]
