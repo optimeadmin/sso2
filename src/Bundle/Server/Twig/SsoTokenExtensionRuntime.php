@@ -33,7 +33,7 @@ class SsoTokenExtensionRuntime implements RuntimeExtensionInterface
         return $this->ssoParamsGenerator->generate($clientCode, $userIdentifierAware, $regenerateAfter);
     }
 
-    public function generateSsoUrl(string $clientCode, string $url, int $regenerateAfter = 0): array
+    public function generateSsoUrl(string $clientCode, string $url, int $regenerateAfter = 0): string
     {
         return $this->urlGenerator->generate('optime_sso_server_generate_url', [
             'client' => $clientCode,
