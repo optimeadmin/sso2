@@ -18,6 +18,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class UserToken
 {
+    #[Id]
     #[Column]
     #[GeneratedValue]
     private ?int $id = null;
