@@ -16,6 +16,7 @@ use Symfony\Component\Uid\Uuid;
 #[Entity]
 #[Table(name: 'optime_sso_client_login_error')]
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
+#[ORM\HasLifecycleCallbacks]
 class SsoLoginError
 {
     #[Id]
@@ -47,5 +48,13 @@ class SsoLoginError
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PrePersist]
+    public function cleanError(): void
+    {
+        if ($this->error && strlen($this->error) > 1000) {
+            $this->error = strip_tags($this->error);
+        }
     }
 }
