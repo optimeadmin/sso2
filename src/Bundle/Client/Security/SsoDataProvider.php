@@ -36,7 +36,7 @@ class SsoDataProvider
         );
 
         if ($response->getStatusCode() >= 400) {
-            throw new AuthenticationException($response->getContent(false));
+            throw new AuthenticationException(strip_tags($response->getContent(false)));
         }
 
         $data = $response->toArray(false) ?? [];

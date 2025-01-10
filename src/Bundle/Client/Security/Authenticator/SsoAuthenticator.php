@@ -5,8 +5,10 @@ namespace Optime\Sso\Bundle\Client\Security\Authenticator;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\Bundle\Client\Log\LoginErrorLogger;
 use Optime\Sso\Bundle\Client\Security\SsoDataProvider;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
@@ -22,6 +24,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         private readonly SsoDataProvider $ssoDataProvider,
         private readonly SsoEntryPoint $entryPoint,
         private readonly UserFactoryInterface $userFactory,
+        private readonly TokenStorageInterface $tokenStorage,
         private readonly LoginErrorLogger $errorLogger,
     ) {
     }
@@ -86,6 +89,10 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
     {
         if (!$this->errorLogger->getLastLog()) {
             $this->errorLogger->forClientAuth($exception, null, 'auth_failure');
+        }
+
+        if ($this->tokenStorage->getToken()) {
+            $this->tokenStorage->setToken(null);
         }
 
         return null;
