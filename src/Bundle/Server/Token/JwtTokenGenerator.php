@@ -29,7 +29,7 @@ class JwtTokenGenerator
             $userIdentifierAware->getSsoIdentifier()
         );
 
-        if ($value = $this->getSession()?->get($sessionKey)) {
+        if ($regenerateAfter > 0 && $value = $this->getSession()?->get($sessionKey)) {
             if ((int)$value >= time()) {
                 // Si no ha expirado el tiempo para regenerar el token, retornamos null
                 return null;
@@ -38,7 +38,9 @@ class JwtTokenGenerator
 
         $token = $this->tokenGenerator->generate($clientCode, $userIdentifierAware);
 
-        $this->getSession()?->set($sessionKey, time() + $regenerateAfter);
+        if ($regenerateAfter > 0) {
+            $this->getSession()?->set($sessionKey, time() + $regenerateAfter);
+        }
 
         return JWT::encode(
             [

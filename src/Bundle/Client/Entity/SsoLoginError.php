@@ -1,6 +1,6 @@
 <?php
 
-namespace Optime\Sso\Bundle\Server\Entity;
+namespace Optime\Sso\Bundle\Client\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
@@ -13,6 +13,7 @@ use Optime\Sso\Bundle\Server\UserIdentifierAwareInterface;
 use Optime\Sso\User\CompanyUserData;
 use Symfony\Component\Uid\Uuid;
 
+#[Entity]
 #[Table(name: 'optime_sso_client_login_error')]
 #[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class SsoLoginError
@@ -22,22 +23,22 @@ class SsoLoginError
     #[GeneratedValue]
     private ?int $id = null;
 
-    #[Column(type: 'string')]
-    public ?string $step = null;
-
-    #[Column(type: 'text')]
-    public ?string $error = null;
-
-    #[Column(type: 'text')]
-    public ?string $authToken = null;
-
-    #[Column(type: 'string')]
-    public ?string $authUrl = null;
-
-    #[Column(type: 'string')]
+    #[Column(type: 'string', nullable: true)]
     public ?string $userIdentifier = null;
 
-    #[Column(type: 'json')]
+    #[Column(type: 'string', nullable: true)]
+    public ?string $step = null;
+
+    #[Column(type: 'text', nullable: true)]
+    public ?string $error = null;
+
+    #[Column(type: 'text', nullable: true)]
+    public ?string $authToken = null;
+
+    #[Column(type: 'string', nullable: true)]
+    public ?string $authUrl = null;
+
+    #[Column(type: 'json', nullable: true)]
     public ?array $ssoData = null;
 
     #[Column]

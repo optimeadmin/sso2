@@ -4,7 +4,7 @@ namespace Optime\Sso\Bundle\Client\Log;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Optime\Sso\Bundle\Client\Security\SsoData;
-use Optime\Sso\Bundle\Server\Entity\SsoLoginError;
+use Optime\Sso\Bundle\Client\Entity\SsoLoginError;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Service\ResetInterface;
 

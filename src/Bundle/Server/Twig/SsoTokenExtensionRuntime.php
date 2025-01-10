@@ -28,13 +28,19 @@ class SsoTokenExtensionRuntime implements RuntimeExtensionInterface
         UserIdentifierAwareInterface $userIdentifierAware,
         int $regenerateAfter = 60,
     ): array {
-        return array_filter([
-            'sso-token' => $this->generateToken($clientCode, $userIdentifierAware, $regenerateAfter),
+        $token = $this->generateToken($clientCode, $userIdentifierAware, $regenerateAfter);
+
+        if (!$token) {
+            return [];
+        }
+
+        return [
+            'sso-token' => $token,
             'sso-auth-url' => $this->urlGenerator->generate(
                 'optime_sso_server_auth',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL,
             ),
-        ]);
+        ];
     }
 }
