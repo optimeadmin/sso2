@@ -16,11 +16,11 @@ class LocalSsoDataProvider
 
     public function resolve(string $token): SsoData
     {
-        $this->tokenGenerator->decodeToken($token);
-        $data = $this->dataProvider->getLocalData();
+        $serverCode = $this->tokenGenerator->decodeToken($token);
+        $data = $this->dataProvider->getLocalData($serverCode);
 
         if ($data instanceof CompanyUserData) {
-            $data = new SsoData('local', $data);
+            $data = new SsoData($serverCode, $data);
         }
 
         return $data;

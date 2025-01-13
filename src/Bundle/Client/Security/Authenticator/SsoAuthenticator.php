@@ -54,11 +54,21 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         return false;
     }
 
+    /**
+     * @throws \Throwable
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
     public function authenticate(Request $request): Passport
     {
         if ($request->query->has('sso-local-token')) {
+            $isLocal = true;
             $ssoData = $this->getLocalSsoData($request);
         } else {
+            $isLocal = false;
             $ssoData = $this->getSsoData($request);
         }
 
@@ -70,11 +80,12 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
             throw new AuthenticationException('Authentication error', $e->getCode(), $e);
         }
 
-        $passport = new SelfValidatingPassport(new UserBadge($authToken, function () use ($userData) {
+        $passport = new SelfValidatingPassport(new UserBadge('', function () use ($userData) {
             return $userData->getUser();
         }));
 
         $passport->setAttribute('user_data', $userData);
+        $passport->setAttribute('is_local', $isLocal);
 
         return $passport;
     }
@@ -87,6 +98,10 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
 
         $token = new PostAuthenticationToken($passport->getUser(), $firewallName, $roles);
         $token->setAttributes($userData->getAttributes());
+
+        if ($passport->getAttribute('is_local')) {
+            $token->setAttribute('is_local', true);
+        }
 
         return $token;
     }

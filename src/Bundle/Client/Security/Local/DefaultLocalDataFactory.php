@@ -10,7 +10,7 @@ use Optime\Sso\User\UserData;
 
 class DefaultLocalDataFactory implements LocalSsoDataFactoryInterface
 {
-    public function getLocalData(): SsoData|CompanyUserData
+    public function getLocalData(string $serverCode): SsoData|CompanyUserData
     {
         $data = new CompanyUserData(
             new CompanyData(1, '_LOCAL_'),
