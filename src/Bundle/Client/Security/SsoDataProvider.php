@@ -3,6 +3,7 @@
 namespace Optime\Sso\Bundle\Client\Security;
 
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
+use Optime\Sso\Bundle\Client\Security\Local\LocalSsoDataProvider;
 use Optime\Sso\User\CompanyUserData;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -23,6 +24,7 @@ class SsoDataProvider implements ResetInterface
         private readonly HttpClientInterface $httpClient,
         private readonly RequestStack $requestStack,
         private readonly UserFactoryInterface $userFactory,
+        private readonly LocalSsoDataProvider $localSsoDataProvider,
     ) {
     }
 
@@ -64,6 +66,20 @@ class SsoDataProvider implements ResetInterface
         return new SsoData(
             $data['serverCode'],
             CompanyUserData::fromArray($this->resolveData($data['userData'])),
+        );
+    }
+
+    public function byLocalToken(string $token): SsoData
+    {
+        $this->reset();
+
+        $ssoData = $this->localSsoDataProvider->resolve($token);
+        $this->lastSsoData = $data = $ssoData->companyUserData->toArray();
+
+
+        return new SsoData(
+            $ssoData->serverCode,
+            CompanyUserData::fromArray($this->resolveData($data)),
         );
     }
 

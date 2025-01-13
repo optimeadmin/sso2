@@ -8,9 +8,9 @@ use Optime\Sso\Bundle\Client\Event\LoginSuccessEvent;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryResult;
 use Optime\Sso\Bundle\Client\Log\LoginErrorLogger;
+use Optime\Sso\Bundle\Client\Security\SsoData;
 use Optime\Sso\Bundle\Client\Security\SsoDataProvider;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +23,11 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
@@ -38,20 +43,23 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
 
     public function supports(Request $request): ?bool
     {
-        return $request->query->has('sso-token') && $request->query->has('sso-auth-url');
+        if ($request->query->has('sso-token') && $request->query->has('sso-auth-url')) {
+            return true;
+        }
+
+        if ($request->query->has('sso-local-token') && $this->isLocalServer($request)) {
+            return true;
+        }
+
+        return false;
     }
 
     public function authenticate(Request $request): Passport
     {
-        $authToken = $request->query->get('sso-token');
-        $authUrl = $request->query->get('sso-auth-url');
-
-        try {
-            $ssoData = $this->ssoDataProvider->byToken($authToken, $authUrl);
-        } catch (\Throwable $error) {
-            $this->errorLogger->forServer($error, $authToken, $authUrl, $this->ssoDataProvider->getLastSsoData());
-
-            throw $error;
+        if ($request->query->has('sso-local-token')) {
+            $ssoData = $this->getLocalSsoData($request);
+        } else {
+            $ssoData = $this->getSsoData($request);
         }
 
         try {
@@ -118,5 +126,50 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         return $this->entryPoint->start($request, $authException);
+    }
+
+    /**
+     * @throws \Throwable
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws DecodingExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    private function getSsoData(Request $request): SsoData
+    {
+        $authToken = $request->query->get('sso-token');
+        $authUrl = $request->query->get('sso-auth-url');
+
+        try {
+            return $this->ssoDataProvider->byToken($authToken, $authUrl);
+        } catch (\Throwable $error) {
+            $this->errorLogger->forServer($error, $authToken, $authUrl, $this->ssoDataProvider->getLastSsoData());
+
+            throw $error;
+        }
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    private function getLocalSsoData(Request $request): SsoData
+    {
+        $token = $request->query->get('sso-local-token');
+
+        try {
+            return $this->ssoDataProvider->byLocalToken($token);
+        } catch (\Throwable $error) {
+            $this->errorLogger->forServer($error, $token, '__LOCAL__', $this->ssoDataProvider->getLastSsoData());
+
+            throw $error;
+        }
+    }
+
+    private function isLocalServer(Request $request): bool
+    {
+        $ip = $request->getClientIp();
+
+        return in_array($ip, ['127.0.0.1', 'fe80::1', '::1']);
     }
 }

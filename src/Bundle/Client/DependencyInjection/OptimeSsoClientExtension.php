@@ -3,9 +3,8 @@
 namespace Optime\Sso\Bundle\Client\DependencyInjection;
 
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
-use Optime\Sso\Bundle\Server\Token\User\UserDataFactoryInterface;
+use Optime\Sso\Bundle\Client\Security\Local\LocalSsoDataFactoryInterface;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -23,10 +22,12 @@ class OptimeSsoClientExtension extends Extension
         );
         $loader->load('services.yaml');
 
-//        $container->setParameter('optime_sso_server.jwt.secret', $config['jwt_secret_key']);
         $container->setParameter('optime_sso_client.inject_iframe_resizer', $config['auto_inject_iframe_resizer']);
         $container->setAlias(UserFactoryInterface::class, $config['user_factory_service']);
+        $container->setAlias(LocalSsoDataFactoryInterface::class, $config['local_data_factory_service']);
 
-//        $container->addResource(new DirectoryResource(__DIR__.'/../'));
+        $container->setParameter('optime_sso_client.temp_private_key', password_hash(
+            __DIR__.$config['user_factory_service'], null
+        ));
     }
 }

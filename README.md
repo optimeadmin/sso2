@@ -155,6 +155,9 @@ Y definir el servicio en config/packages/optime_sso_client.yaml:
 ```yaml
 optime_sso_client:
   user_factory_service: App\Security\SsoUserFactory
+  # el local data factory es opcional y permite hacer login localmente sin usar un server sso real.
+  # se debe usar el comando symfony console optime:sso:login para obtener un token temporal de inicio de sesion.
+  local_data_factory_service: # Implementar \Optime\Sso\Bundle\Client\Security\Local\LocalSsoDataFactoryInterface
   # auto_inject_iframe_resizer: true Por defecto true, indica si se incluye el script de iframe resize automaticamente 
 ```
 
