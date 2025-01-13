@@ -4,6 +4,7 @@ namespace Optime\Sso\Bundle\Client\Security\Local;
 
 use Optime\Sso\Bundle\Client\Security\SsoData;
 use Optime\Sso\Bundle\Client\Token\LocalTokenGenerator;
+use Optime\Sso\User\CompanyUserData;
 
 class LocalSsoDataProvider
 {
@@ -16,7 +17,12 @@ class LocalSsoDataProvider
     public function resolve(string $token): SsoData
     {
         $this->tokenGenerator->decodeToken($token);
+        $data = $this->dataProvider->getLocalData();
 
-        return $this->dataProvider->getLocalData();
+        if ($data instanceof CompanyUserData) {
+            $data = new SsoData('local', $data);
+        }
+
+        return $data;
     }
 }
