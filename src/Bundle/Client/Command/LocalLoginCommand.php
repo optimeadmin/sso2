@@ -21,17 +21,11 @@ class LocalLoginCommand extends Command
         parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument('server', InputArgument::OPTIONAL, 'Serve Code');
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $serverCode = $input->getArgument('server') ?? 'local';
 
-        $jwt = $this->tokenGenerator->generate($serverCode);
+        $jwt = $this->tokenGenerator->generate();
 
         $io->warning('Recuerda que el token tiene una vigencia de 60 segundos');
         $io->title('Copia y pega este token al final de la url donde desees hacer login sso');

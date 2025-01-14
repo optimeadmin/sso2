@@ -7,5 +7,5 @@ use Optime\Sso\User\CompanyUserData;
 
 interface LocalSsoDataFactoryInterface
 {
-    public function getLocalData(string $serverCode): SsoData|CompanyUserData;
+    public function getLocalData(): SsoData;
 }

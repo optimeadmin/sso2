@@ -16,13 +16,8 @@ class LocalSsoDataProvider
 
     public function resolve(string $token): SsoData
     {
-        $serverCode = $this->tokenGenerator->decodeToken($token);
-        $data = $this->dataProvider->getLocalData($serverCode);
+        $this->tokenGenerator->decodeToken($token);
 
-        if ($data instanceof CompanyUserData) {
-            $data = new SsoData($serverCode, $data);
-        }
-
-        return $data;
+        return $this->dataProvider->getLocalData();
     }
 }

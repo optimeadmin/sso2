@@ -67,6 +67,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         if ($request->query->has('sso-local-token')) {
             $isLocal = true;
             $ssoData = $this->getLocalSsoData($request);
+            $this->errorLogger->setAsLocalLogin();
         } else {
             $isLocal = false;
             $ssoData = $this->getSsoData($request);
@@ -131,6 +132,10 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
             $this->errorLogger->forClientAuth($exception, null, 'auth_failure');
         }
 
+        if ($this->errorLogger->isLocalLogin()) {
+            throw $exception;
+        }
+
         if ($this->tokenStorage->getToken()) {
             $this->tokenStorage->setToken(null);
         }
@@ -140,6 +145,10 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
+        if ($authException && $this->errorLogger->isLocalLogin()) {
+            throw  $authException;
+        }
+
         return $this->entryPoint->start($request, $authException);
     }
 

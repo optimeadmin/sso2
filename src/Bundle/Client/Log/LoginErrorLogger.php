@@ -11,6 +11,7 @@ use Symfony\Contracts\Service\ResetInterface;
 class LoginErrorLogger implements ResetInterface
 {
     private ?SsoLoginError $lastLog = null;
+    private bool $localLogin = false;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -49,6 +50,17 @@ class LoginErrorLogger implements ResetInterface
     public function reset(): void
     {
         $this->lastLog = null;
+        $this->localLogin = false;
+    }
+
+    public function isLocalLogin(): ?bool
+    {
+        return $this->localLogin;
+    }
+
+    public function setAsLocalLogin(): void
+    {
+        $this->localLogin = true;
     }
 
     private function persist(SsoLoginError $log, \Throwable $ssoError): void

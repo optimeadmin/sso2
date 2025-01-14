@@ -12,12 +12,11 @@ class LocalTokenGenerator
     ) {
     }
 
-    public function generate(string $serverCode): ?string
+    public function generate(): ?string
     {
         return JWT::encode(
             [
                 'token' => '__LOCAL__',
-                'server' => $serverCode,
                 'exp' => time() + 60,
             ],
             $this->privateKey,
@@ -25,10 +24,8 @@ class LocalTokenGenerator
         );
     }
 
-    public function decodeToken(string $encodedToken): string
+    public function decodeToken(string $encodedToken): mixed
     {
-        $data = JWT::decode($encodedToken, new Key($this->privateKey, 'HS256'));
-
-        return $data->server;
+        return JWT::decode($encodedToken, new Key($this->privateKey, 'HS256'));
     }
 }
