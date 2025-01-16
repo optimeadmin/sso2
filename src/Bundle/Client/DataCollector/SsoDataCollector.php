@@ -2,6 +2,7 @@
 
 namespace Optime\Sso\Bundle\Client\DataCollector;
 
+use Optime\Sso\Bundle\Client\LocalServerChecker;
 use Optime\Sso\Bundle\Client\Token\LocalTokenGenerator;
 use Symfony\Bundle\FrameworkBundle\DataCollector\AbstractDataCollector;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -13,12 +14,13 @@ class SsoDataCollector extends AbstractDataCollector
     public function __construct(
         private readonly Security $security,
         private readonly LocalTokenGenerator $tokenGenerator,
+        private readonly LocalServerChecker $localServerChecker,
     ) {
     }
 
     public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
-        if ($this->security->getUser() || !$this->isLocalServer($request)) {
+        if ($this->security->getUser() || !$this->localServerChecker->isLocalServer($request)) {
             $this->data = ['show' => false];
 
             return;
@@ -47,12 +49,5 @@ class SsoDataCollector extends AbstractDataCollector
     public static function getTemplate(): ?string
     {
         return '@OptimeSsoClient/collector/sso.html.twig';
-    }
-
-    private function isLocalServer(Request $request): bool
-    {
-        $ip = $request->getClientIp();
-
-        return in_array($ip, ['127.0.0.1', 'fe80::1', '::1']);
     }
 }

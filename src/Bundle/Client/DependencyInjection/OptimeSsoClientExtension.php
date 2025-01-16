@@ -22,6 +22,7 @@ class OptimeSsoClientExtension extends Extension
         );
         $loader->load('services.yaml');
 
+        $container->setParameter('optime_sso_client.local_ip', $config['local_extra_ip']);
         $container->setParameter('optime_sso_client.inject_iframe_resizer', $config['auto_inject_iframe_resizer']);
         $container->setAlias(UserFactoryInterface::class, $config['user_factory_service']);
         $container->setAlias(LocalSsoDataFactoryInterface::class, $config['local_data_factory_service']);

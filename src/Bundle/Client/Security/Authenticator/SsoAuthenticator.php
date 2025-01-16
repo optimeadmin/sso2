@@ -7,6 +7,7 @@ use Optime\SimpleSsoClientBundle\Security\TokenAttributes;
 use Optime\Sso\Bundle\Client\Event\LoginSuccessEvent;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryResult;
+use Optime\Sso\Bundle\Client\LocalServerChecker;
 use Optime\Sso\Bundle\Client\Log\LoginErrorLogger;
 use Optime\Sso\Bundle\Client\Security\SsoData;
 use Optime\Sso\Bundle\Client\Security\SsoDataProvider;
@@ -37,6 +38,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         private readonly UserFactoryInterface $userFactory,
         private readonly TokenStorageInterface $tokenStorage,
         private readonly EventDispatcherInterface $dispatcher,
+        private readonly LocalServerChecker $localServerChecker,
         private readonly LoginErrorLogger $errorLogger,
     ) {
     }
@@ -47,7 +49,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
             return true;
         }
 
-        if ($request->query->has('sso-local-token') && $this->isLocalServer($request)) {
+        if ($request->query->has('sso-local-token') && $this->localServerChecker->isLocalServer($request)) {
             return true;
         }
 
@@ -188,12 +190,5 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
 
             throw $error;
         }
-    }
-
-    private function isLocalServer(Request $request): bool
-    {
-        $ip = $request->getClientIp();
-
-        return in_array($ip, ['127.0.0.1', 'fe80::1', '::1']);
     }
 }

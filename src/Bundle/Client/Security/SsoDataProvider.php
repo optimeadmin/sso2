@@ -3,6 +3,7 @@
 namespace Optime\Sso\Bundle\Client\Security;
 
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
+use Optime\Sso\Bundle\Client\LocalServerChecker;
 use Optime\Sso\Bundle\Client\Security\Local\LocalSsoDataProvider;
 use Optime\Sso\User\CompanyUserData;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -25,6 +26,7 @@ class SsoDataProvider implements ResetInterface
         private readonly RequestStack $requestStack,
         private readonly UserFactoryInterface $userFactory,
         private readonly LocalSsoDataProvider $localSsoDataProvider,
+        private readonly LocalServerChecker $localServerChecker,
     ) {
     }
 
@@ -44,7 +46,7 @@ class SsoDataProvider implements ResetInterface
             $url,
             [
                 'headers' => ['sso-token' => $token],
-                'verify_peer' => !$this->isLocalServer(),
+                'verify_peer' => !$this->localServerChecker->isLocalServer(),
             ]
         );
 
@@ -121,12 +123,5 @@ class SsoDataProvider implements ResetInterface
             'base' => $keyData['base'] ?? [],
             'extra' => $resolver->resolve($keyData['extra'] ?? []),
         ];
-    }
-
-    private function isLocalServer(): bool
-    {
-        $ip = $this->requestStack->getCurrentRequest()->getClientIp();
-
-        return in_array($ip, ['127.0.0.1', 'fe80::1', '::1']);
     }
 }
