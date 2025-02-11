@@ -25,6 +25,7 @@ class Configuration implements ConfigurationInterface
                     ->defaultValue(DefaultLocalDataFactory::class)
                 ->end()
                 ->booleanNode('auto_inject_iframe_resizer')->defaultTrue()->end()
+                ->booleanNode('cookie_partitioned')->defaultTrue()->end()
                 ->scalarNode('local_extra_ip')->defaultNull()->end()
 //                ->scalarNode('jwt_expiration_seconds')->defaultValue(10)->end()
             ->end()

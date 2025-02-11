@@ -8,6 +8,7 @@ services:
       $injectIframeResizer: '%optime_sso_client.inject_iframe_resizer%'
       $privateKey: '%optime_sso_client.temp_private_key%'
       $localConfiguredIp: '%optime_sso_client.local_ip%'
+      $partitionedCookie: '%optime_sso_client.cookie_partitioned%'
 #      $expirationSeconds: '%optime_sso_server.jwt.expiration%'
 
   Optime\Sso\Bundle\Client\:
