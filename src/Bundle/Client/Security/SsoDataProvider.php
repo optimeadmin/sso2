@@ -23,7 +23,6 @@ class SsoDataProvider implements ResetInterface
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
-        private readonly RequestStack $requestStack,
         private readonly UserFactoryInterface $userFactory,
         private readonly LocalSsoDataProvider $localSsoDataProvider,
         private readonly LocalServerChecker $localServerChecker,
@@ -68,6 +67,8 @@ class SsoDataProvider implements ResetInterface
         return new SsoData(
             $data['serverCode'],
             CompanyUserData::fromArray($this->resolveData($data['userData'])),
+            $data['apiTokens'] ?? null,
+            $data['serverUrl'] ?? null,
         );
     }
 
