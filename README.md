@@ -160,6 +160,7 @@ optime_sso_client:
   local_data_factory_service: # Implementar \Optime\Sso\Bundle\Client\Security\Local\LocalSsoDataFactoryInterface
   # auto_inject_iframe_resizer: true Por defecto true, indica si se incluye el script de iframe resize automaticamente 
   # local_extra_ip: # Opcional, si se usa docker por ejemplo, colocar la ip de docker para poder hacer login localmente.
+  # cookie_partitioned: true # Opcional, por defecto true, determina si las cookies son partitioned o no (iframe).
 ```
 
 Correr comando de doctrine:
@@ -186,5 +187,61 @@ Recordar que en el servidor donde se genera el iframe, se debe incluir lo siguie
 
   initialize({}, "#<id-del-la-etiqueta-iframe>");
 </script>
+```
+
+<hr />
+
+### Llamados a api del servidor.
+
+Este bundle permite implementar seguridad para llamados a apis del server desde el cliente sso.
+
+Para ello se debe configurar lo siguiente:
+
+#### Server config
+
+Agregar el SsoApiTokenAuthenticator en el security.yaml del servidor:
+
+```yaml
+main:
+  provider: app_user_provider
+  custom_authenticators:
+    - ...
+    - Optime\Sso\Bundle\Server\Security\Authenticator\SsoApiTokenAuthenticator
+```
+
+Opcionalmente se puede implementar la interfaz `Optime\Sso\Bundle\Server\Security\SsoApiUserProviderInterface`
+en la clase UserDataFactory que se ha creado previamente.
+
+Implementar esta interfaz permitirá definir la logica para cargar al usuario en sesion a partir
+del identificador que llega desde el cliente.
+
+#### Uso en el cliente
+
+Para hacer uso de llamados a apis en el server se puede usar el servicio:
+
+`Optime\Sso\Bundle\Client\Api\SsoHttpClient` el cual implementa `Symfony\Contracts\HttpClient\HttpClientInterface`
+
+Y tiene los mismos métodos para llamar a endpoints, haciendo automático el envio de headers para autenticar
+al usuario en el server al llamar a las apis.
+
+Ejemplo:
+
+```php
+
+use Optime\Sso\Bundle\Client\Api\SsoHttpClient;
+
+class DataProvider
+{
+    public function __construct(private readonly SsoHttpClient $httpClient)
+    {
+    }
+
+    public function byUser(User $user): array
+    {
+        // SsoHttpClient sabe cual es el domino del server de forma automática.
+        // Además, establece los headers necesarios para que el servidor autentique al usuario.
+        $this->httpClient->request('GET', '/api/data');
+    }
+}
 ```
 

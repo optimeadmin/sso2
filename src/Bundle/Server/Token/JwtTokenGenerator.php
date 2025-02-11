@@ -81,6 +81,13 @@ class JwtTokenGenerator
         return [$data->token, $data->clientCode];
     }
 
+    public function decodeApiToken(string $encodedToken): array
+    {
+        $data = JWT::decode($encodedToken, new Key($this->privateKey, 'HS256'));
+
+        return [$data->userIdentifier, $data->clientCode];
+    }
+
     private function getSession(): ?SessionInterface
     {
         try {
