@@ -2,6 +2,7 @@
 
 namespace Optime\Sso\Bundle\Client\Api;
 
+use Optime\Sso\Bundle\Client\LocalServerChecker;
 use Symfony\Component\HttpClient\HttpClientTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -14,6 +15,7 @@ class SsoHttpClient implements HttpClientInterface
     public function __construct(
         private readonly HttpClientInterface $client,
         private readonly SsoApiTokensProvider $tokensProvider,
+        private readonly LocalServerChecker $localServerChecker,
     ) {
     }
 
@@ -25,6 +27,10 @@ class SsoHttpClient implements HttpClientInterface
         ];
 
         $options['base_uri'] ??= $this->tokensProvider->getServerUrl();
+
+        if ($this->localServerChecker->isLocalServer()) {
+            $options['verify_peer'] = false;
+        }
 
         return $this->client->request($method, $url, $options);
     }
