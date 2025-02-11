@@ -6,12 +6,14 @@ use Optime\Sso\Bundle\Server\Event\StartAuthEvent;
 use Optime\Sso\Bundle\Server\Repository\UserTokenRepository;
 use Optime\Sso\Bundle\Server\Token\JwtTokenGenerator;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class SecurityDataProvider
 {
     public function __construct(
+        private readonly RequestStack $requestStack,
         private readonly JwtTokenGenerator $tokenGenerator,
         private readonly UserTokenRepository $tokenRepository,
         private readonly EventDispatcherInterface $dispatcher,
@@ -40,6 +42,8 @@ class SecurityDataProvider
         return [
             'serverCode' => $this->serverCode,
             'userData' => $userToken->getUserData(),
+            'apiTokens' => $this->tokenGenerator->generateApiTokens($userToken),
+            'serverUrl' => $this->requestStack->getCurrentRequest()?->getSchemeAndHttpHost(),
         ];
     }
 }

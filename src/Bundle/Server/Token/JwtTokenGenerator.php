@@ -4,6 +4,7 @@ namespace Optime\Sso\Bundle\Server\Token;
 
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use Optime\Sso\Bundle\Server\Entity\UserToken;
 use Optime\Sso\Bundle\Server\UserIdentifierAwareInterface;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -51,6 +52,26 @@ class JwtTokenGenerator
             $this->privateKey,
             'HS256'
         );
+    }
+
+    public function generateApiTokens(UserToken $userToken): array
+    {
+        $identifier = $userToken->getUserIdentifier();
+        $clientCode = $userToken->getClientCode();
+
+        $token = JWT::encode([
+            'userIdentifier' => $identifier,
+            'clientCode' => $clientCode,
+            'exp' => time() + (3600 * 4),
+        ], $this->privateKey, 'HS256');
+
+        $refreshToken = JWT::encode([
+            'userIdentifier' => $identifier,
+            'clientCode' => $clientCode,
+            'exp' => time() + (3600 * 24),
+        ], $this->privateKey, 'HS256');
+
+        return [$token, $refreshToken];
     }
 
     public function decodeToken(string $encodedToken): array
