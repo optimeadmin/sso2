@@ -6,5 +6,5 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 interface SsoApiUserProviderInterface
 {
-    public function loadUserFromSsoApiId(string|int $identifier): ?UserInterface;
+    public function loadUserFromSsoApiId(string|int $identifier, array $extraData): ?UserInterface;
 }

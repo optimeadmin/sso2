@@ -58,11 +58,13 @@ class JwtTokenGenerator
     {
         $identifier = $userToken->getUserIdentifier();
         $clientCode = $userToken->getClientCode();
+        $tokenData = $userToken->getApiTokenData() ?? [];
 
         $token = JWT::encode([
             'userIdentifier' => $identifier,
             'clientCode' => $clientCode,
             'exp' => time() + (3600 * 4),
+            'extraData' => $tokenData,
         ], $this->privateKey, 'HS256');
 
         $refreshToken = JWT::encode([
@@ -85,7 +87,7 @@ class JwtTokenGenerator
     {
         $data = JWT::decode($encodedToken, new Key($this->privateKey, 'HS256'));
 
-        return [$data->userIdentifier, $data->clientCode];
+        return [$data->userIdentifier, (array)$data->extraData, $data->clientCode];
     }
 
     private function getSession(): ?SessionInterface

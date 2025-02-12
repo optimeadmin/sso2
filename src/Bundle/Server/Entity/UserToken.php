@@ -35,6 +35,9 @@ class UserToken
     #[Column(type: 'json')]
     private ?array $userData = null;
 
+    #[Column(type: 'json')]
+    private ?array $apiTokenData = null;
+
     #[Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -42,12 +45,14 @@ class UserToken
         string $clientCode,
         UserIdentifierAwareInterface $userIdentifierAware,
         CompanyUserData $companyUserData,
+        ?array $apiTokenData,
     ): self {
         $obj = new self();
         $obj->clientCode = $clientCode;
         $obj->token = Uuid::v4();
         $obj->userIdentifier = $userIdentifierAware->getSsoIdentifier();
         $obj->userData = $companyUserData->toArray();
+        $obj->apiTokenData = $apiTokenData;
         $obj->createdAt = new \DateTimeImmutable();
 
         return $obj;
@@ -71,5 +76,10 @@ class UserToken
     public function getUserData(): array
     {
         return $this->userData;
+    }
+
+    public function getApiTokenData(): ?array
+    {
+        return $this->apiTokenData;
     }
 }

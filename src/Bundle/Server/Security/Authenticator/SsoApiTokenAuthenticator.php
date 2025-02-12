@@ -31,11 +31,12 @@ class SsoApiTokenAuthenticator extends AbstractAuthenticator
     public function authenticate(Request $request): Passport
     {
         $jwt = $request->headers->get('sso-api-auth-token');
-        $tokenDSata = $this->tokenGenerator->decodeApiToken($jwt);
-        $identifier = $tokenDSata[0];
+        $tokenData = $this->tokenGenerator->decodeApiToken($jwt);
+        $identifier = $tokenData[0];
+        $extraData = $tokenData[1] ?? [];
 
         if ($this->userDataFactory instanceof SsoApiUserProviderInterface) {
-            $userLoader = fn($identifier) => $this->userDataFactory->loadUserFromSsoApiId($identifier);
+            $userLoader = fn($identifier) => $this->userDataFactory->loadUserFromSsoApiId($identifier, $extraData);
         } else {
             $userLoader = null;
         }

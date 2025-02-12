@@ -215,6 +215,13 @@ en la clase UserDataFactory que se ha creado previamente.
 Implementar esta interfaz permitirá definir la logica para cargar al usuario en sesion a partir
 del identificador que llega desde el cliente.
 
+#### Añadiedo información adicional al token del usuario
+
+Si se necesita añadir información extra a parte de el identificador del usuario, como por ejemplo
+el perfil o la empresa con la que inició sesion, la clase UserDataFactory debe implementar la interfaz
+`Optime\Sso\Bundle\Server\Security\SsoApiTokenDataProviderInterface`, con esto será posible
+retornar la data adicional que va a contener el token.
+
 #### Uso en el cliente
 
 Para hacer uso de llamados a apis en el server se puede usar el servicio:
