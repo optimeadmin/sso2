@@ -93,6 +93,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
 
         $passport->setAttribute('api_tokens', $ssoData->apiTokens);
         $passport->setAttribute('server_url', $ssoData->serverUrl);
+        $passport->setAttribute('refresh_token_url', $ssoData->refreshTokenUrl);
 
         return $passport;
     }
@@ -107,6 +108,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         $token->setAttributes($userData->getAttributes());
         $token->setAttribute('sso_api_tokens', $passport->getAttribute('api_tokens'));
         $token->setAttribute('sso_server_url', $passport->getAttribute('server_url'));
+        $token->setAttribute('sso_refresh_token_url', $passport->getAttribute('refresh_token_url'));
 
         if ($passport->getAttribute('is_local')) {
             $token->setAttribute('is_local', true);

@@ -27,6 +27,11 @@ class SsoApiTokensProvider
         return ['sso-api-auth-token' => $this->getToken()];
     }
 
+    public function getRefreshTokensHeaders(): array
+    {
+        return ['sso-api-refresh-token' => $this->getRefreshToken()];
+    }
+
     public function getServerUrl(): string
     {
         $token = $this->validateAndGetToken();
@@ -37,6 +42,24 @@ class SsoApiTokensProvider
         }
 
         return $token->getAttribute('sso_server_url');
+    }
+
+    public function getRefreshTokenUrl(): string
+    {
+        $token = $this->validateAndGetToken();
+
+        if (!$token->hasAttribute('sso_refresh_token_url')) {
+
+            throw new InvalidTokenException('sso_refresh_token_url attribute not found');
+        }
+
+        return $token->getAttribute('sso_refresh_token_url');
+    }
+
+    public function refresh(array $apiTokens): void
+    {
+        $token = $this->validateAndGetToken();
+        $token->setAttribute('sso_api_tokens', $apiTokens);
     }
 
     private function validateAndGetToken(): TokenInterface

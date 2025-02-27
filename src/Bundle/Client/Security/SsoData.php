@@ -11,6 +11,7 @@ class SsoData implements \JsonSerializable
         public readonly CompanyUserData $companyUserData,
         public readonly ?array $apiTokens = null,
         public readonly ?string $serverUrl = null,
+        public readonly ?string $refreshTokenUrl = null,
     ) {
     }
 

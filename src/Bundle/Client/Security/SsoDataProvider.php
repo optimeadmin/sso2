@@ -69,6 +69,7 @@ class SsoDataProvider implements ResetInterface
             CompanyUserData::fromArray($this->resolveData($data['userData'])),
             $data['apiTokens'] ?? null,
             $data['serverUrl'] ?? null,
+            $data['refreshTokenUrl'] ?? null,
         );
     }
 
