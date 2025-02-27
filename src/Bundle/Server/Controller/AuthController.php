@@ -32,4 +32,16 @@ class AuthController extends AbstractController
 
         return $this->json($this->securityDataProvider->generate($jwt));
     }
+
+    #[Route('/fresh-token', name: 'optime_sso_server_refresh_token', methods: 'POST')]
+    public function refreshToken(Request $request): Response
+    {
+        if (!$request->headers->has('sso-api-refresh-token')) {
+            throw new AccessDeniedHttpException('sso-api-refresh-token header not found');
+        }
+
+        $refreshToken = $request->headers->get('sso-api-refresh-token');
+
+        return $this->json($this->securityDataProvider->regenerateTokens($refreshToken));
+    }
 }
