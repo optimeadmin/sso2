@@ -2,10 +2,12 @@
 
 namespace Optime\Sso\Bundle\Client\Security;
 
+use Optime\Sso\Bundle\Client\Event\SsoDataCreatedEvent;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\Bundle\Client\LocalServerChecker;
 use Optime\Sso\Bundle\Client\Security\Local\LocalSsoDataProvider;
 use Optime\Sso\User\CompanyUserData;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -26,6 +28,7 @@ class SsoDataProvider implements ResetInterface
         private readonly UserFactoryInterface $userFactory,
         private readonly LocalSsoDataProvider $localSsoDataProvider,
         private readonly LocalServerChecker $localServerChecker,
+        private readonly EventDispatcherInterface $dispatcher,
     ) {
     }
 
@@ -64,13 +67,17 @@ class SsoDataProvider implements ResetInterface
             throw new AuthenticationException('userData is required in auth server response');
         }
 
-        return new SsoData(
+        $ssoData = new SsoData(
             $data['serverCode'],
             CompanyUserData::fromArray($this->resolveData($data['userData'])),
             $data['apiTokens'] ?? null,
             $data['serverUrl'] ?? null,
             $data['refreshTokenUrl'] ?? null,
         );
+
+        $this->dispatcher->dispatch(new SsoDataCreatedEvent($ssoData));
+
+        return $ssoData;
     }
 
     public function byLocalToken(string $token): SsoData

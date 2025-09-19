@@ -4,6 +4,9 @@ namespace Optime\Sso\Bundle\Client\Security\Authenticator;
 
 use Optime\SimpleSsoClientBundle\Event\SimpleSsoLoginEvent;
 use Optime\SimpleSsoClientBundle\Security\TokenAttributes;
+use Optime\Sso\Bundle\Client\Event\LoginPasswordCreatedEvent;
+use Optime\Sso\Bundle\Client\Event\LoginSsoDataEvent;
+use Optime\Sso\Bundle\Client\Event\LoginSsoStartEvent;
 use Optime\Sso\Bundle\Client\Event\LoginSuccessEvent;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryResult;
@@ -46,10 +49,14 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
     public function supports(Request $request): ?bool
     {
         if ($request->query->has('sso-token') && $request->query->has('sso-auth-url')) {
+            $this->dispatcher->dispatch(new LoginSsoStartEvent(false));
+
             return true;
         }
 
         if ($request->query->has('sso-local-token') && $this->localServerChecker->isLocalServer($request)) {
+            $this->dispatcher->dispatch(new LoginSsoStartEvent(true));
+
             return true;
         }
 
@@ -75,8 +82,14 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
             $ssoData = $this->getSsoData($request);
         }
 
+        $this->dispatcher->dispatch(new LoginSsoDataEvent($ssoData));
+
         try {
             $userData = $this->userFactory->create($ssoData);
+
+            if (!$userData) {
+                throw new AuthenticationException('No user data returned by user factory');
+            }
         } catch (\Throwable $e) {
             $this->errorLogger->forClientAuth($e, $ssoData, 'user_factory');
 
@@ -94,6 +107,8 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         $passport->setAttribute('api_tokens', $ssoData->apiTokens);
         $passport->setAttribute('server_url', $ssoData->serverUrl);
         $passport->setAttribute('refresh_token_url', $ssoData->refreshTokenUrl);
+
+        $this->dispatcher->dispatch(new LoginPasswordCreatedEvent($passport, $userData, $ssoData));
 
         return $passport;
     }
