@@ -9,7 +9,7 @@ use Optime\Sso\Bundle\Client\Security\SsoData;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Contracts\EventDispatcher\Event;
 
-class LoginPasswordCreatedEvent extends Event
+class LoginSsoPasswordCreatedEvent extends Event
 {
     public function __construct(
         public readonly Passport $passport,

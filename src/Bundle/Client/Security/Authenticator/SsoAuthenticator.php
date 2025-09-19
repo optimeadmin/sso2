@@ -4,8 +4,8 @@ namespace Optime\Sso\Bundle\Client\Security\Authenticator;
 
 use Optime\SimpleSsoClientBundle\Event\SimpleSsoLoginEvent;
 use Optime\SimpleSsoClientBundle\Security\TokenAttributes;
-use Optime\Sso\Bundle\Client\Event\LoginPasswordCreatedEvent;
 use Optime\Sso\Bundle\Client\Event\LoginSsoDataEvent;
+use Optime\Sso\Bundle\Client\Event\LoginSsoPasswordCreatedEvent;
 use Optime\Sso\Bundle\Client\Event\LoginSsoStartEvent;
 use Optime\Sso\Bundle\Client\Event\LoginSuccessEvent;
 use Optime\Sso\Bundle\Client\Factory\UserFactoryInterface;
@@ -108,7 +108,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         $passport->setAttribute('server_url', $ssoData->serverUrl);
         $passport->setAttribute('refresh_token_url', $ssoData->refreshTokenUrl);
 
-        $this->dispatcher->dispatch(new LoginPasswordCreatedEvent($passport, $userData, $ssoData));
+        $this->dispatcher->dispatch(new LoginSsoPasswordCreatedEvent($passport, $userData, $ssoData));
 
         return $passport;
     }
