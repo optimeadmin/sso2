@@ -103,6 +103,18 @@ Si se necesita generar la url en el momento que un usuario da click en un link, 
 <a href="{{ generate_sso_url('client_code', 'http://url-cliente.com/test') }}">My Link</a>
 ```
 
+### Servicio `Optime\Sso\Bundle\Server\SsoClientUrlGenerator`
+
+Se puede usar este servicio para generar una url al cliente que lleve los parametros necesarios para iniciar
+sesion sso:
+
+```php
+
+$url = $clientUrlGenerator->generate('client_id', 'https://client.com/path');
+// url -> https://client.com/path?sso-token=xxxxxxxxx
+
+```
+
 <hr>
 
 ## ClientBundle

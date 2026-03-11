@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Optime\Sso\Bundle\Server\Controller;
 
-use Optime\Sso\Bundle\Server\SsoParamsGenerator;
+use Optime\Sso\Bundle\Server\SsoClientUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +17,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class UrlController extends AbstractController
 {
     public function __construct(
-        private readonly SsoParamsGenerator $paramsGenerator,
+        private readonly SsoClientUrlGenerator $clientUrlGenerator,
     ) {
     }
 
@@ -35,8 +35,7 @@ class UrlController extends AbstractController
             throw new NotFoundHttpException('target url query not found');
         }
 
-        $ssoData = $this->paramsGenerator->generate($client, $this->getUser(), $regenerateAfter);
-        $url = $target.(str_contains($target, '?') ? '&' : '?').http_build_query($ssoData);
+        $url = $this->clientUrlGenerator->generate($client, $target, $regenerateAfter);
 
         return $this->redirect($url);
     }
