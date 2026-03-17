@@ -139,12 +139,12 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         $event = new LoginSuccessEvent($request, $token, $firewallName);
         $this->dispatcher->dispatch($event);
 
-        if ($event->isPropagationStopped()) {
-            return null;
-        }
-
         if ($event->hasResponse()) {
             return $event->getResponse();
+        }
+        
+        if ($event->isPropagationStopped()) {
+            return null;
         }
 
         $request = $request->duplicate();
