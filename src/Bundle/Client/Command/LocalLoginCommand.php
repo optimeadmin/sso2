@@ -9,6 +9,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -21,13 +22,19 @@ class LocalLoginCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this->addOption('ttl', null, InputOption::VALUE_OPTIONAL, 'Tiempo de expiración del token en segundos', 60);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $jwt = $this->tokenGenerator->generate();
+        $ttl = (int) $input->getOption('ttl');
+        $jwt = $this->tokenGenerator->generate($ttl);
 
-        $io->warning('Recuerda que el token tiene una vigencia de 60 segundos');
+        $io->warning(sprintf('Recuerda que el token tiene una vigencia de %d segundos', $ttl));
         $io->title('Copia y pega este token al final de la url donde desees hacer login sso');
         $io->section(sprintf('?sso-local-token=%s', $jwt));
 

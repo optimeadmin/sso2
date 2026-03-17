@@ -12,12 +12,12 @@ class LocalTokenGenerator
     ) {
     }
 
-    public function generate(): ?string
+    public function generate(int $ttl = 60): ?string
     {
         return JWT::encode(
             [
                 'token' => '__LOCAL__',
-                'exp' => time() + 60,
+                'exp' => time() + $ttl,
             ],
             $this->privateKey,
             'HS256'
