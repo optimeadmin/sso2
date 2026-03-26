@@ -4,6 +4,7 @@ namespace Optime\Sso\Bundle\Client\Security\Authenticator;
 
 use Optime\SimpleSsoClientBundle\Event\SimpleSsoLoginEvent;
 use Optime\SimpleSsoClientBundle\Security\TokenAttributes;
+use Optime\Sso\Bundle\Client\Api\SsoApiTokenProvider;
 use Optime\Sso\Bundle\Client\Event\LoginSsoDataEvent;
 use Optime\Sso\Bundle\Client\Event\LoginSsoPasswordCreatedEvent;
 use Optime\Sso\Bundle\Client\Event\LoginSsoStartEvent;
@@ -43,6 +44,7 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         private readonly EventDispatcherInterface $dispatcher,
         private readonly LocalServerChecker $localServerChecker,
         private readonly LoginErrorLogger $errorLogger,
+        private readonly SsoApiTokenProvider $apiTokenProvider,
     ) {
     }
 
@@ -104,9 +106,8 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
         $passport->setAttribute('is_local', $isLocal);
 
 
-        $passport->setAttribute('api_tokens', $ssoData->apiTokens);
+        $passport->setAttribute('api_token', $ssoData->apiToken);
         $passport->setAttribute('server_url', $ssoData->serverUrl);
-        $passport->setAttribute('refresh_token_url', $ssoData->refreshTokenUrl);
 
         $this->dispatcher->dispatch(new LoginSsoPasswordCreatedEvent($passport, $userData, $ssoData));
 
@@ -121,9 +122,10 @@ class SsoAuthenticator extends AbstractAuthenticator implements AuthenticationEn
 
         $token = new PostAuthenticationToken($passport->getUser(), $firewallName, $roles);
         $token->setAttributes($userData->getAttributes());
-        $token->setAttribute('sso_api_tokens', $passport->getAttribute('api_tokens'));
-        $token->setAttribute('sso_server_url', $passport->getAttribute('server_url'));
-        $token->setAttribute('sso_refresh_token_url', $passport->getAttribute('refresh_token_url'));
+        $this->apiTokenProvider->setAuthData($token, [
+            'api_token' => $passport->getAttribute('api_token'),
+            'server_url' => $passport->getAttribute('server_url')
+        ]);
 
         if ($passport->getAttribute('is_local')) {
             $token->setAttribute('is_local', true);

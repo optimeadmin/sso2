@@ -9,9 +9,8 @@ class SsoData implements \JsonSerializable
     public function __construct(
         public readonly string $serverCode,
         public readonly CompanyUserData $companyUserData,
-        public readonly ?array $apiTokens = null,
+        public readonly ?string $apiToken = null,
         public readonly ?string $serverUrl = null,
-        public readonly ?string $refreshTokenUrl = null,
     ) {
     }
 

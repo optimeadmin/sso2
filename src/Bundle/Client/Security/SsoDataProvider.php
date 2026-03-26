@@ -70,9 +70,8 @@ class SsoDataProvider implements ResetInterface
         $ssoData = new SsoData(
             $data['serverCode'],
             CompanyUserData::fromArray($this->resolveData($data['userData'])),
-            $data['apiTokens'] ?? null,
+            $data['apiToken'] ?? null,
             $data['serverUrl'] ?? null,
-            $data['refreshTokenUrl'] ?? null,
         );
 
         $this->dispatcher->dispatch(new SsoDataCreatedEvent($ssoData));

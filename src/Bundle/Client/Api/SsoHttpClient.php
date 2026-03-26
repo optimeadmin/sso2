@@ -16,7 +16,7 @@ class SsoHttpClient implements HttpClientInterface
 
     public function __construct(
         private readonly HttpClientInterface $client,
-        private readonly SsoApiTokensProvider $tokensProvider,
+        private readonly SsoApiTokenProvider $tokenProvider,
         private readonly LocalServerChecker $localServerChecker,
     ) {
     }
@@ -25,10 +25,10 @@ class SsoHttpClient implements HttpClientInterface
     {
         $options['headers'] = [
             ...($options['headers'] ?? []),
-            ...$this->tokensProvider->getAuthHeaders(),
+            ...$this->tokenProvider->getAuthHeaders(),
         ];
 
-        $options['base_uri'] ??= $this->tokensProvider->getServerUrl();
+        $options['base_uri'] ??= $this->tokenProvider->getServerUrl();
 
         if ($this->localServerChecker->isLocalServer()) {
             $options['verify_peer'] = false;
@@ -40,7 +40,6 @@ class SsoHttpClient implements HttpClientInterface
             $message = $response->getContent(false);
 
             if (str_contains($message, 'token')) {
-                $this->refreshTokens();
                 $this->tokenRefreshed = true;
 
                 return $this->request($method, $url, $options);
@@ -55,24 +54,5 @@ class SsoHttpClient implements HttpClientInterface
     public function stream(iterable|ResponseInterface $responses, ?float $timeout = null): ResponseStreamInterface
     {
         return $this->client->stream($responses, $timeout);
-    }
-
-    public function refreshTokens(): void
-    {
-        $options = [
-            'headers' => $this->tokensProvider->getRefreshTokensHeaders(),
-            'base_uri' => $this->tokensProvider->getRefreshTokenUrl(),
-        ];
-
-        if ($this->localServerChecker->isLocalServer()) {
-            $options['verify_peer'] = false;
-        }
-
-        $response = $this->client->request('POST', '', $options);
-        $data = $response->toArray(false);
-
-        if ($data && count($data) > 0) {
-            $this->tokensProvider->refresh($data);
-        }
     }
 }
