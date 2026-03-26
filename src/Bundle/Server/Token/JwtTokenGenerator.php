@@ -54,32 +54,23 @@ class JwtTokenGenerator
         );
     }
 
-    public function generateApiTokens(UserToken $userToken): array
+    public function generateApiToken(UserToken $userToken): string
     {
         $identifier = $userToken->getUserIdentifier();
         $clientCode = $userToken->getClientCode();
         $tokenData = $userToken->getApiTokenData() ?? [];
 
-        return $this->doBuildApiTokens($identifier, $clientCode, $tokenData);
+        return $this->doBuildApiToken($identifier, $clientCode, $tokenData);
     }
 
-    public function doBuildApiTokens(string|int $identifier, string $clientCode, array $tokenData): array
+    public function doBuildApiToken(string|int $identifier, string $clientCode, array $tokenData): string
     {
-        $token = JWT::encode([
+        return JWT::encode([
             'userIdentifier' => $identifier,
             'clientCode' => $clientCode,
-            'exp' => time() + 3600,
+            'exp' => time() + 3600 * 48,
             'extraData' => $tokenData,
         ], $this->privateKey, 'HS256');
-
-        $refreshToken = JWT::encode([
-            'userIdentifier' => $identifier,
-            'clientCode' => $clientCode,
-            'exp' => time() + (3600 * 24),
-            'extraData' => $tokenData,
-        ], $this->privateKey, 'HS256');
-
-        return [$token, $refreshToken];
     }
 
     public function decodeToken(string $encodedToken): array
